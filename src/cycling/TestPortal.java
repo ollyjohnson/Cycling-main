@@ -1,10 +1,12 @@
+package cycling;
+
 import cycling.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class TestPortal {
 
-    private static CyclingPortalImpl portal = new CyclingPortalImpl();
+    private static final CyclingPortalImpl portal = new CyclingPortalImpl();
 
     public static void main(String[] args) {
         // Call all the test methods
