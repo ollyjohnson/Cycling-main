@@ -77,10 +77,15 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
+		boolean found = false;
 		for(Race race: races){
 			if(race.getRaceId()==raceId){
-				
+				races.remove(race);
+				found = true;
 			}
+		}
+		if(!found){
+			throw new IDNotRecognisedException("No team found with ID: " + raceId);
 		}
 
 	}
