@@ -57,13 +57,23 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	@Override
-	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
-		validateRaceName(name);
-		int newRaceId = raceIdCounter++;
-		Race newRace = new Race(newRaceId, name, description);
-		races.add(newRace);
-		return newRaceId;
+	public int createRace(String name, String description) {
+		int newRaceId = raceIdCounter;
+		try {
+			validateRaceName(name);
+			raceIdCounter++;
+			Race newRace = new Race(newRaceId, name, description);
+			races.add(newRace);
+			return newRaceId;
+		} catch (IllegalNameException e) {
+			System.err.println("Illegal race name provided: " + e.getMessage());
+			return 0;
+		} catch (InvalidNameException e) {
+			System.err.println("Invalid race name format: " + e.getMessage());
+			return 0;
+		}
 	}
+	
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {

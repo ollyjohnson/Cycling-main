@@ -28,6 +28,7 @@ public class Team {
         return riders;
     }
     public void addRider(Rider rider) {
+        //change to array list?
         Rider[] newRiders = new Rider[riders.length + 1];
         System.arraycopy(riders, 0, newRiders, 0, riders.length);
         newRiders[riders.length] = rider;
@@ -35,6 +36,7 @@ public class Team {
     }
 
     public void removeRider(int riderId){
+        //add error hadnling exception
         for (int i = 0; i < riders.length; i++) {
             if (riders[i].getRiderId() == riderId) {
                 Rider[] newRiders = new Rider[riders.length - 1];

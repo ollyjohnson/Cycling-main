@@ -1,13 +1,18 @@
 package cycling;
+
+import java.util.ArrayList;
+
 public class Race {
     private int id;
     private String name;
     private String description;
+    private ArrayList<Stage> stages;
 
     public Race(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.stages = new ArrayList<>();
     }
 
     @Override
@@ -23,6 +28,19 @@ public class Race {
 
     public String getRaceName() {
         return name;
+    }
+
+    public void addStage(Stage stage) {
+        this.stages.add(stage);
+    }
+
+    public void removeStage(int stageId) {
+        // add error handling
+        for(Stage stage : stages){
+            if(stage.getStageId() == stageId){
+                stages.remove(stage);
+            }
+        }
     }
 }
 
