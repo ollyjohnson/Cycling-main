@@ -1,5 +1,7 @@
 package cycling;
 
+import javax.naming.InvalidNameException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -14,7 +16,10 @@ import java.time.LocalTime;
  */
 public interface CyclingPortal extends MiniCyclingPortal {
 
-	/**
+	int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, String stageType)
+			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException;
+
+    /**
 	 * The method removes the race and all its related information, i.e., stages,
 	 * checkpoints, and results.
 	 * <p>

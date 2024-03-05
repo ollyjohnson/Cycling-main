@@ -30,6 +30,13 @@ public class Stage {
     public String getStageName(){
         return name;
     }
-    
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
