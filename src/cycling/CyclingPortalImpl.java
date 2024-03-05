@@ -8,8 +8,6 @@ import java.util.HashMap;
 
 import javax.naming.InvalidNameException;
 
-import cycling.IDNotRecognisedException;
-
 
 /**
  * Implementor of the CyclingPortal interface.
@@ -19,6 +17,7 @@ import cycling.IDNotRecognisedException;
  *
  */
 public class CyclingPortalImpl implements CyclingPortal {
+	// Counter variables to generate unique IDs for teams, riders, and races.
 	private int teamIdCounter = 1;
 	private int riderIdCounter = 1;
 	private int raceIdCounter = 1;
@@ -36,6 +35,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
     }
 
+	// Validates a race name ensuring it is not null, empty, or already used.
 	private void validateRaceName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
@@ -47,7 +47,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
     }
 
-
+	// Returns an array of all race IDs.
 	@Override
 	public int[] getRaceIds() {
 		int[] raceIds = new int[races.size()];
@@ -58,6 +58,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		return raceIds;
 	}
 
+	//  * Creates a new race with the given name and description, and adds it to the list of races.
 	@Override
 	public int createRace(String name, String description) {
 		int newRaceId = raceIdCounter;
@@ -76,7 +77,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
 	}
 	
-
+    //Provides details of a race identified by its ID.
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
 		Race race = races.get(raceId);
@@ -87,6 +88,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
 	}
 
+	// Removes a race by its ID.
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		boolean found = false;
@@ -109,13 +111,52 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	@Override
-	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime,
-			StageType type)
+	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, String stageType)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
-				
-		// TODO Auto-generated method stub
-		return 0;
+		// Validate the stage name.
+		if (stageName == null || stageName.trim().isEmpty()) {
+			throw new IllegalNameException("Stage name cannot be null or empty.");
+		}
+
+		// Validate the length of the stage.
+		if (length <= 0) {
+			throw new InvalidLengthException("Stage length must be positive.");
+		}
+
+		// Convert length from double to int, assuming length should be an integer value as per Stage class definition.
+		int intLength = (int) Math.round(length);
+
+		// Find the race by ID.
+		Race targetRace = null;
+		for (Race race : races) {
+			if (race.getRaceId() == raceId) {
+				targetRace = race;
+				break;
+			}
+		}
+		if (targetRace == null) {
+			throw new IDNotRecognisedException("No race found with ID: " + raceId);
+		}
+
+		int newStageId = generateNewStageId(); // Implement this method to generate unique stage IDs.
+
+		// Create a new Stage object.
+		Stage newStage = new Stage(newStageId, stageName, targetRace, description, intLength, startTime, stageType);
+
+		targetRace.addStage(newStage);
+
+		// Return the ID of the newly created Stage.
+		return newStage.getId();
 	}
+
+	private int stageIdCounter = 1;
+
+	// Utility method to generate and return a new unique stage ID.
+	private int generateNewStageId() {
+		return stageIdCounter++; // Increment and return the stage ID counter.
+	}
+
+
 
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
