@@ -17,9 +17,7 @@ public class Race {
 
     @Override
     public String toString() {
-        // Assuming stages and race_length are intended to be part of this class, declare and initialize them properly.
-        // For demonstration, removing the reference to undeclared variables.
-        return("Team id = " + id + " name="+name+" description="+description);
+        return("Race id = " + id + " name="+name+" description="+description+" stages=" + stages);
     }
 
     public int getRaceId() {
@@ -28,6 +26,25 @@ public class Race {
 
     public String getRaceName() {
         return name;
+    }
+
+    public String getRaceDetails() {
+        String[] stageNames = new String[stages.size()];
+        double totalLength = 0;
+        int index = 0;
+        for(Stage stage : stages){
+            totalLength += stage.getLength();
+            stageNames[index++] = stage.getStageName();
+        }
+
+        String details = """
+        Race ID = %d
+        Race name = %s
+        Race description = %s
+        Stages in race = %s
+        Length of race = %.2f
+        """.formatted(id, name, description, String.join("\n", stageNames), totalLength);
+        return details;
     }
 
     public void addStage(Stage stage) {
@@ -42,6 +59,11 @@ public class Race {
             }
         }
     }
+
+    public int getNumberOfStages(){
+        return stages.size();
+    }
+
 }
 
 

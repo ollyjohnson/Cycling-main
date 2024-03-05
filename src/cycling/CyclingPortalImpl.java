@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InvalidNameException;
 
@@ -21,14 +22,14 @@ public class CyclingPortalImpl implements CyclingPortal {
 	private int teamIdCounter = 1;
 	private int riderIdCounter = 1;
 	private int raceIdCounter = 1;
-	private ArrayList<Team> teams = new ArrayList<>();
-	private ArrayList<Race> races = new ArrayList<>();
+	private HashMap<Integer, Team> teams = new HashMap<>();
+	private HashMap<Integer, Race> races = new HashMap<>();
 	
 	private void validateTeamName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
         }
-		for (Team team : teams) {
+		for (Team team : teams.values()) {
 			if (team.getTeamName().equals(name)){
 				throw new InvalidNameException("Team name already exists.");
 			}
@@ -39,7 +40,7 @@ public class CyclingPortalImpl implements CyclingPortal {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
         }
-		for (Race race : races) {
+		for (Race race : races.values()) {
 			if (race.getRaceName().equals(name)){
 				throw new InvalidNameException("Team name already exists.");
 			}
@@ -50,8 +51,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public int[] getRaceIds() {
 		int[] raceIds = new int[races.size()];
-		for (int i = 0; i < races.size(); i++) {
-			raceIds[i] = races.get(i).getRaceId();
+		int index = 0;
+		for (Integer key : races.keySet()) {
+			raceIds[index++] = key;
 		}
 		return raceIds;
 	}
@@ -61,9 +63,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 		int newRaceId = raceIdCounter;
 		try {
 			validateRaceName(name);
-			raceIdCounter++;
+			newRaceId = raceIdCounter++;
 			Race newRace = new Race(newRaceId, name, description);
-			races.add(newRace);
+			races.put(newRaceId, newRace);
 			return newRaceId;
 		} catch (IllegalNameException e) {
 			System.err.println("Illegal race name provided: " + e.getMessage());
@@ -77,18 +79,18 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
-		for(Race race:races){
-			if(race.getRaceId() == raceId){
-				return race.toString();
-			}
+		Race race = races.get(raceId);
+		if (race != null) {
+			return race.getRaceDetails();
+		} else {
+			throw new IDNotRecognisedException("No race found with ID: " + raceId);
 		}
-		throw new IDNotRecognisedException("No race found with ID: " + raceId);
 	}
 
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		boolean found = false;
-		for(Race race: races){
+		for(Race race: races.values()){
 			if(race.getRaceId()==raceId){
 				races.remove(race);
 				found = true;
@@ -102,14 +104,15 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return 0;
+		Race race = races.get(raceId);
+		return race.getNumberOfStages();
 	}
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime,
 			StageType type)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
+				
 		// TODO Auto-generated method stub
 		return 0;
 	}

@@ -30,6 +30,9 @@ public class Stage {
     public String getStageName(){
         return name;
     }
+    public int getLength(){
+        return length;
+    }
     
 
 }
