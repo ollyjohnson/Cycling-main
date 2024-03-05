@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InvalidNameException;
 
 
 /**
  * Implementor of the CyclingPortal interface.
- * 
+ *
  * @author Olly Johnson Laith Al-Qudah
  * @version 1.0
  *
@@ -20,16 +21,14 @@ public class CyclingPortalImpl implements CyclingPortal {
 	private int teamIdCounter = 1;
 	private int riderIdCounter = 1;
 	private int raceIdCounter = 1;
-	// Lists to store the teams and races.
-	private ArrayList<Team> teams = new ArrayList<>();
-	private ArrayList<Race> races = new ArrayList<>();
+	private HashMap<Integer, Team> teams = new HashMap<>();
+	private HashMap<Integer, Race> races = new HashMap<>();
 
-	// Validates a team name ensuring it is not null, empty, or already used.
 	private void validateTeamName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
         }
-		for (Team team : teams) {
+		for (Team team : teams.values()) {
 			if (team.getTeamName().equals(name)){
 				throw new InvalidNameException("Team name already exists.");
 			}
@@ -41,7 +40,7 @@ public class CyclingPortalImpl implements CyclingPortal {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
         }
-		for (Race race : races) {
+		for (Race race : races.values()) {
 			if (race.getRaceName().equals(name)){
 				throw new InvalidNameException("Team name already exists.");
 			}
@@ -52,8 +51,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public int[] getRaceIds() {
 		int[] raceIds = new int[races.size()];
-		for (int i = 0; i < races.size(); i++) {
-			raceIds[i] = races.get(i).getRaceId();
+		int index = 0;
+		for (Integer key : races.keySet()) {
+			raceIds[index++] = key;
 		}
 		return raceIds;
 	}
@@ -64,9 +64,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 		int newRaceId = raceIdCounter;
 		try {
 			validateRaceName(name);
-			raceIdCounter++;
+			newRaceId = raceIdCounter++;
 			Race newRace = new Race(newRaceId, name, description);
-			races.add(newRace);
+			races.put(newRaceId, newRace);
 			return newRaceId;
 		} catch (IllegalNameException e) {
 			System.err.println("Illegal race name provided: " + e.getMessage());
@@ -76,23 +76,23 @@ public class CyclingPortalImpl implements CyclingPortal {
 			return 0;
 		}
 	}
-	
+
     //Provides details of a race identified by its ID.
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
-		for(Race race:races){
-			if(race.getRaceId() == raceId){
-				return race.toString();
-			}
+		Race race = races.get(raceId);
+		if (race != null) {
+			return race.getRaceDetails();
+		} else {
+			throw new IDNotRecognisedException("No race found with ID: " + raceId);
 		}
-		throw new IDNotRecognisedException("No race found with ID: " + raceId);
 	}
 
 	// Removes a race by its ID.
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		boolean found = false;
-		for(Race race: races){
+		for(Race race: races.values()){
 			if(race.getRaceId()==raceId){
 				races.remove(race);
 				found = true;
@@ -106,17 +106,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		// Iterate through the list of races to find the race with the given ID.
-		for (Race race : races) {
-			// Check if the current race's ID matches the raceId parameter.
-			if (race.getRaceId() == raceId) {
-				// If a match is found, return the number of stages in this race.
-				return race.stages.size();
-			}
-		}
-
-		// If no race with the given ID is found, throw an exception.
-		throw new IDNotRecognisedException("No race found with ID: " + raceId);
+		Race race = races.get(raceId);
+		return race.getNumberOfStages();
 	}
 
 
@@ -309,7 +300,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			}
 		}
 		throw new IDNotRecognisedException("No team found with ID: " + teamId);
-			
+
 	}
 
 
@@ -330,14 +321,14 @@ public class CyclingPortalImpl implements CyclingPortal {
 				break;
 			}
 		}
-		
+
 		if (riderTeam != null) {
 			Rider newRider = new Rider(newRiderId, name, yearOfBirth, riderTeam);
 			riderTeam.addRider(newRider);
 		} else {
 			throw new IDNotRecognisedException("No team found with ID: " + teamId);
 		}
-				
+
 	}
 
 	@Override
