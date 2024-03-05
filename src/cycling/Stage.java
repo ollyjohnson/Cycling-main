@@ -16,13 +16,13 @@ public class Stage {
         this.name = name;
         this.description = description;
         this.race = race;
-        this.length = length;
+        this.setLength(length);
         this.startTime = startTime;
         this.stageType = stageType;
     }
     @Override
     public String toString(){
-        return("Stage id = " + id + "name="+name+" description="+description+" race="+ race+" length="+length + " start time=" + startTime+" stage type="+stageType);
+        return("Stage id = " + id + "name="+name+" description="+description+" race="+ race+" length="+ getLength() + " start time=" + startTime+" stage type="+stageType);
     }
     public int getStageId(){
         return id;
@@ -39,4 +39,13 @@ public class Stage {
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
 }
+

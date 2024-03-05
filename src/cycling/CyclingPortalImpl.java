@@ -106,9 +106,19 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return 0;
+		// Iterate through the list of races to find the race with the given ID.
+		for (Race race : races) {
+			// Check if the current race's ID matches the raceId parameter.
+			if (race.getRaceId() == raceId) {
+				// If a match is found, return the number of stages in this race.
+				return race.stages.size();
+			}
+		}
+
+		// If no race with the given ID is found, throw an exception.
+		throw new IDNotRecognisedException("No race found with ID: " + raceId);
 	}
+
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, String stageType)
@@ -160,21 +170,65 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		// Find the race with the specified ID.
+		for (Race race : races) {
+			if (race.getRaceId() == raceId) {
+				// Extract and return the stage IDs for this race.
+				ArrayList<Stage> stages = race.stages();
+				int[] stageIds = new int[stages.size()];
+				for (int i = 0; i < stages.size(); i++) {
+					stageIds[i] = stages.get(i).getId(); // Assuming Stage has a getId() method.
+				}
+				return stageIds;
+			}
+		}
+
+		// If the race with the given ID is not found, throw an exception.
+		throw new IDNotRecognisedException("No race found with ID: " + raceId);
 	}
 
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return 0;
+		// Iterate through all races.
+		for (Race race : races) {
+			ArrayList<Stage> stages = race.getStages();
+			for (Stage stage : stages) {
+				// Check if the current stage's ID matches the given stageId.
+				if (stage.getId() == stageId) {
+					// If a match is found, return the length of this stage as double.
+					return (double) stage.getLength();
+				}
+			}
+		}
+
+		// If no stage with the given ID is found, throw an exception.
+		throw new IDNotRecognisedException("No stage found with ID: " + stageId);
 	}
+
 
 	@Override
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		boolean found = false;
+		// Iterate through all races to find the stage by ID and remove it.
+		for (Race race : races) {
+			for (Stage stage : race.getStages()) {
+				if (stage.getId() == stageId) {
+					race.getStages().remove(stage); // Remove the stage from the current race.
+					found = true;
+					break;
+				}
+			}
+			// Break the outer loop if the stage has been found and removed.
+			if (found) {
+				break;
+			}
+		}
+		if (!found) {
+			// If the stage was not found in any race, throw an exception.
+			throw new IDNotRecognisedException("No stage found with ID: " + stageId);
+		}
 	}
+
 
 	@Override
 	public int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,

@@ -6,7 +6,7 @@ public class Race {
     private int id;
     private String name;
     private String description;
-    private ArrayList<Stage> stages;
+    public ArrayList<Stage> stages;
 
     public Race(int id, String name, String description) {
         this.id = id;
@@ -36,12 +36,22 @@ public class Race {
 
     public void removeStage(int stageId) {
         // add error handling
-        for(Stage stage : stages){
-            if(stage.getStageId() == stageId){
-                stages.remove(stage);
-            }
-        }
+        stages.removeIf(stage -> stage.getStageId() == stageId);
+    }
+
+    public ArrayList<Stage> stages() {
+        return null;
+    }
+
+    public ArrayList<Stage> getStages() {
+        return stages;
+    }
+
+    public void setStages(ArrayList<Stage> stages) {
+        this.stages = stages;
     }
 }
+
+
 
 
