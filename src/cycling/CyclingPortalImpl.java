@@ -23,9 +23,11 @@ public class CyclingPortalImpl implements CyclingPortal {
 	private int riderIdCounter = 1;
 	private int raceIdCounter = 1;
 	private int stageIdCounter = 1;
+	// Hash maps to save lists of teams and races.
 	private HashMap<Integer, Team> teams = new HashMap<>();
 	private HashMap<Integer, Race> races = new HashMap<>();
 
+	// Validates a race name ensuring it is not null, empty, or already used.
 	private void validateTeamName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
@@ -49,30 +51,19 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
     }
 	
-	// Validates a race Id, ensuring it exists
-	private void validateRaceId(Map<Integer, Race> racesMap, Integer id) throws IDNotRecognisedException {
-    if (!racesMap.containsKey(id)) {
-        throw new IDNotRecognisedException("No entry found with ID: " + id);
-		}
-	}
-	// Validates a stage Id, ensuring it exists
-	private void validateStageId(Map<Integer, Stages> stagesMap, Integer id) throws IDNotRecognisedException {
-		if (!stagesMap.containsKey(id)) {
-			throw new IDNotRecognisedException("No entry found with ID: " + id);
+	// Validates a race Id, ensuring it exists in the given array
+	private void validateId(int[] idArray, int id) throws IDNotRecognisedException {
+		boolean idFound = false;
+		for (int currentId : idArray) {
+			if (currentId == id) {
+				idFound = true;
+				break;
 			}
 		}
-	// Validates a team Id, ensuring it exists
-	private void validateTeamId(Map<Integer, Team> teamsMap, Integer id) throws IDNotRecognisedException {
-    if (!teamsMap.containsKey(id)) {
-        throw new IDNotRecognisedException("No entry found with ID: " + id);
+		if (!idFound) {
+			throw new IDNotRecognisedException("No entry found with ID: " + id);
 		}
 	}
-	// Validates a rider Id, ensuring it exists
-	private void validateRiderId(Map<Integer, Riders> ridersMap, Integer id) throws IDNotRecognisedException {
-		if (!ridersMap.containsKey(id)) {
-			throw new IDNotRecognisedException("No entry found with ID: " + id);
-			}
-		}
 
 	// Returns an array of all race IDs.
 	@Override
@@ -172,6 +163,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
 		// Find the race with the specified ID.
 		Race race = races.get(raceId);
+		// If the race with the given ID is not found, it will throw an exception.
+		validateId(getRaceIds(), raceId);
 		// Extract and return the stage IDs for this race.
 		ArrayList<Stage> stages = race.stages();
 		int[] stageIds = new int[stages.size()];
@@ -179,10 +172,6 @@ public class CyclingPortalImpl implements CyclingPortal {
 			stageIds[i] = stages.get(i).getId(); // Assuming Stage has a getId() method.
 		}
 		return stageIds;
-	
-
-		// If the race with the given ID is not found, throw an exception.
-		throw new IDNotRecognisedException("No race found with ID: " + raceId);
 	}
 
 	@Override
@@ -198,7 +187,6 @@ public class CyclingPortalImpl implements CyclingPortal {
 				}
 			}
 		}
-
 		// If no stage with the given ID is found, throw an exception.
 		throw new IDNotRecognisedException("No stage found with ID: " + stageId);
 	}
@@ -208,10 +196,10 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
 		boolean found = false;
 		// Iterate through all races to find the stage by ID and remove it.
-		for (Race race : races) {
+		for (Race race : races.values()) {
 			for (Stage stage : race.getStages()) {
 				if (stage.getId() == stageId) {
-					race.getStages().remove(stage); // Remove the stage from the current race.
+					race.removeStage(stageId); // Remove the stage from the current race.
 					found = true;
 					break;
 				}

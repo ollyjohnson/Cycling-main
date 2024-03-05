@@ -48,7 +48,7 @@ public class Race {
     }
 
     public void addStage(Stage stage) {
-        this.stages.add(stage);
+        stages.add(stage);
     }
 
     public void removeStage(int stageId) {
