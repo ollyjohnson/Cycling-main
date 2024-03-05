@@ -48,6 +48,12 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
     }
 
+	private <T> void validateId(HashMap<Integer, T> map, Integer id) throws IDNotRecognisedException {
+		if (!map.containsKey(id)) {
+			throw new IDNotRecognisedException("No entry found with ID: " + id);
+		}
+	}
+
 	// Returns an array of all race IDs.
 	@Override
 	public int[] getRaceIds() {
@@ -162,7 +168,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
 		// Iterate through all races.
-		for (Race race : races) {
+		for (Race race : races.values()) {
 			ArrayList<Stage> stages = race.getStages();
 			for (Stage stage : stages) {
 				// Check if the current stage's ID matches the given stageId.
