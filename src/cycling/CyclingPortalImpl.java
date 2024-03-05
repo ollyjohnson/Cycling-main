@@ -17,10 +17,11 @@ import javax.naming.InvalidNameException;
  *
  */
 public class CyclingPortalImpl implements CyclingPortal {
-	// Counter variables to generate unique IDs for teams, riders, and races.
+	// Counter variables to generate unique IDs for teams, riders, stages and races.
 	private int teamIdCounter = 1;
 	private int riderIdCounter = 1;
 	private int raceIdCounter = 1;
+	private int stageIdCounter = 1;
 	private HashMap<Integer, Team> teams = new HashMap<>();
 	private HashMap<Integer, Race> races = new HashMap<>();
 
@@ -124,37 +125,19 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new InvalidLengthException("Stage length must be positive.");
 		}
 
-		// Convert length from double to int, assuming length should be an integer value as per Stage class definition.
-		int intLength = (int) Math.round(length);
-
 		// Find the race by ID.
-		Race targetRace = null;
-		for (Race race : races) {
-			if (race.getRaceId() == raceId) {
-				targetRace = race;
-				break;
-			}
-		}
-		if (targetRace == null) {
+		Race race = races.get(raceId);
+		if (race == null) {
 			throw new IDNotRecognisedException("No race found with ID: " + raceId);
 		}
 
-		int newStageId = generateNewStageId(); // Implement this method to generate unique stage IDs.
+		int newStageId = stageIdCounter++; //Generate unique stage id
 
 		// Create a new Stage object.
-		Stage newStage = new Stage(newStageId, stageName, targetRace, description, intLength, startTime, stageType);
-
-		targetRace.addStage(newStage);
-
+		Stage newStage = new Stage(newStageId, stageName, race, description, length, startTime, stageType);
+		race.addStage(newStage);
 		// Return the ID of the newly created Stage.
-		return newStage.getId();
-	}
-
-	private int stageIdCounter = 1;
-
-	// Utility method to generate and return a new unique stage ID.
-	private int generateNewStageId() {
-		return stageIdCounter++; // Increment and return the stage ID counter.
+		return newStageId;
 	}
 
 
@@ -162,17 +145,15 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
 		// Find the race with the specified ID.
-		for (Race race : races) {
-			if (race.getRaceId() == raceId) {
-				// Extract and return the stage IDs for this race.
-				ArrayList<Stage> stages = race.stages();
-				int[] stageIds = new int[stages.size()];
-				for (int i = 0; i < stages.size(); i++) {
-					stageIds[i] = stages.get(i).getId(); // Assuming Stage has a getId() method.
-				}
-				return stageIds;
-			}
+		Race race = races.get(raceId);
+		// Extract and return the stage IDs for this race.
+		ArrayList<Stage> stages = race.stages();
+		int[] stageIds = new int[stages.size()];
+		for (int i = 0; i < stages.size(); i++) {
+			stageIds[i] = stages.get(i).getId(); // Assuming Stage has a getId() method.
 		}
+		return stageIds;
+	
 
 		// If the race with the given ID is not found, throw an exception.
 		throw new IDNotRecognisedException("No race found with ID: " + raceId);
