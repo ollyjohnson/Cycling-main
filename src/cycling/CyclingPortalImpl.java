@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.InvalidNameException;
 
@@ -47,12 +48,31 @@ public class CyclingPortalImpl implements CyclingPortal {
 			}
 		}
     }
-
-	private <T> void validateId(HashMap<Integer, T> map, Integer id) throws IDNotRecognisedException {
-		if (!map.containsKey(id)) {
-			throw new IDNotRecognisedException("No entry found with ID: " + id);
+	
+	// Validates a race Id, ensuring it exists
+	private void validateRaceId(Map<Integer, Race> racesMap, Integer id) throws IDNotRecognisedException {
+    if (!racesMap.containsKey(id)) {
+        throw new IDNotRecognisedException("No entry found with ID: " + id);
 		}
 	}
+	// Validates a stage Id, ensuring it exists
+	private void validateStageId(Map<Integer, Stages> stagesMap, Integer id) throws IDNotRecognisedException {
+		if (!stagesMap.containsKey(id)) {
+			throw new IDNotRecognisedException("No entry found with ID: " + id);
+			}
+		}
+	// Validates a team Id, ensuring it exists
+	private void validateTeamId(Map<Integer, Team> teamsMap, Integer id) throws IDNotRecognisedException {
+    if (!teamsMap.containsKey(id)) {
+        throw new IDNotRecognisedException("No entry found with ID: " + id);
+		}
+	}
+	// Validates a rider Id, ensuring it exists
+	private void validateRiderId(Map<Integer, Riders> ridersMap, Integer id) throws IDNotRecognisedException {
+		if (!ridersMap.containsKey(id)) {
+			throw new IDNotRecognisedException("No entry found with ID: " + id);
+			}
+		}
 
 	// Returns an array of all race IDs.
 	@Override
