@@ -284,51 +284,42 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int[] getTeamRiders(int teamId) throws IDNotRecognisedException {
-		for (Team team : teams) {
-			if (team.getTeamId() == teamId) {
-				Rider[] riders = team.getRiders();
-				int[] riderIds = new int[riders.length];
-				for (int i = 0; i < riders.length; i++) {
-					riderIds[i] = riders[i].getRiderId();
-				}
-				return riderIds;
-			}
+		validateId(getTeams(), teamId);
+		Team team = teams.get(teamId);
+		return team.getRiderIds();
 		}
-		throw new IDNotRecognisedException("No team found with ID: " + teamId);
-
-	}
 
 
 	@Override
 	public int createRider(int teamId, String name, int yearOfBirth)
 			throws IDNotRecognisedException, IllegalArgumentException {
-		if (name.equals(null)){
+		//Validate name
+		if (name == null){
 			throw new IllegalArgumentException("Illegal argument, name cannot be null: " + name);
 		}
+		//Validate birth year
 		else if (yearOfBirth < 1900){
 			throw new IllegalArgumentException("Illegal argument, year of birth must be at least 1900: " + yearOfBirth);
 		}
-		Team riderTeam = null;
+		//Validate the team id
+		validateId(getTeams(), teamId);
+		//Get the team from the map using the id
+		Team riderTeam = teams.get(teamId);
+
+		// Create a new rider and add to the team
 		int newRiderId = riderIdCounter++;
-		for (Team team : teams) {
-			if (team.getTeamId() == teamId) {
-				riderTeam = team;
-				break;
-			}
-		}
-
-		if (riderTeam != null) {
-			Rider newRider = new Rider(newRiderId, name, yearOfBirth, riderTeam);
-			riderTeam.addRider(newRider);
-		} else {
-			throw new IDNotRecognisedException("No team found with ID: " + teamId);
-		}
-
+		Rider newRider = new Rider(newRiderId, name, yearOfBirth, riderTeam);
+		riderTeam.addRider(newRider);
+		
+		// Return the new rider ID
+		return newRiderId;
 	}
+	
 
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
-		for(Team team : teams){
+		//loop through each team
+		for(Team team : teams.values()){
 			//loop through the riders in each team
 			Rider [] riders = team.getRiders();
 			for(Rider rider : riders){
@@ -340,11 +331,36 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
 
 	}
-
+	/**
+	 * Record the times of a rider in a stage.
+	 * <p>
+	 * The state of this MiniCyclingPortal must be unchanged if any
+	 * exceptions are thrown.
+	 * 
+	 * @param stageId     The ID of the stage the result refers to.
+	 * @param riderId     The ID of the rider.
+	 * @param checkpointTimes An array of times at which the rider reached each of the
+	 *                    checkpoints of the stage, including the start time and the
+	 *                    finish line.
+	 * @throws IDNotRecognisedException    If the ID does not match to any rider or
+	 *                                     stage in the system.
+	 * @throws DuplicatedResultException   Thrown if the rider has already a result
+	 *                                     for the stage. Each rider can have only
+	 *                                     one result per stage.
+	 * @throws InvalidCheckpointTimesException Thrown if the length of checkpointTimes is
+	 *                                     not equal to n+2, where n is the number
+	 *                                     of checkpoints in the stage; +2 represents
+	 *                                     the start time and the finish time of the
+	 *                                     stage.
+	 * @throws InvalidStageStateException  Thrown if the stage is not "waiting for
+	 *                                     results". Results can only be added to a
+	 *                                     stage while it is "waiting for results".
+	 */
 	@Override
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException,
 			InvalidStageStateException {
+				validateId(team.getRiders(), riderId);
 		// TODO Auto-generated method stub
 
 	}

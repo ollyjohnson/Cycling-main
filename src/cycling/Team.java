@@ -27,6 +27,14 @@ public class Team {
     public Rider []getRiders(){
         return riders;
     }
+    public int [] getRiderIds(){
+        int [] riderIds = new int[riders.length];
+        index = 0;
+        for(Rider rider: riders){
+            ridersIds[index++] = rider.getId();
+        }
+        return riderIds;
+    }
     public void addRider(Rider rider) {
         //change to array list?
         Rider[] newRiders = new Rider[riders.length + 1];
