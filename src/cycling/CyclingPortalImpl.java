@@ -260,18 +260,15 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public void removeTeam(int teamId) throws IDNotRecognisedException {
-		boolean found = false;
-		for (Team team : teams) {
-			if(team.getTeamId() == teamId){
-				teams.remove(team);
-				found = true;
-			}
-		}
-		if(!found){
+		//check if the id is in the teams hash map
+		if (teams.containsKey(teamId)) {
+			//if it is remove it from the hash map
+			teams.remove(teamId);
+		} else {
+			//If not then throw the exception
 			throw new IDNotRecognisedException("No team found with ID: " + teamId);
 		}
-
-	}
+}
 
 	@Override
 	public int[] getTeams() {

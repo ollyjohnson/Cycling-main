@@ -9,9 +9,9 @@ public class Stage {
     private String description;
     private int length;
     private LocalDateTime startTime;
-    private String stageType;
+    private StageType stageType;
 
-    public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, String stageType) {
+    public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
         this.name = name;
         this.description = description;
