@@ -1,6 +1,7 @@
 package cycling;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public class Stage {
     private int id;
@@ -10,6 +11,7 @@ public class Stage {
     private int length;
     private LocalDateTime startTime;
     private StageType stageType;
+    private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -33,11 +35,8 @@ public class Stage {
     public int getLength(){
         return length;
     }
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
+    public void addCheckpointToStage(int checkpointId, Checkpoint checkpoint) {
+        this.checkpoints.put(checkpointId, checkpoint);
     }
 }
 

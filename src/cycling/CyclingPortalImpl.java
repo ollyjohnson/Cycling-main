@@ -197,8 +197,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 		boolean found = false;
 		// Iterate through all races to find the stage by ID and remove it.
 		for (Race race : races.values()) {
-			for (Stage stage : race.getStages()) {
-				if (stage.getId() == stageId) {
+			for (Stage stage : race.getStageIds()) {
+				if (stage == stageId) {
 					race.removeStage(stageId); // Remove the stage from the current race.
 					found = true;
 					break;
@@ -220,8 +220,30 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
-		// TODO Auto-generated method stub
-		return 0;
+			validateId(getRaceIds(), stageId);
+			Stage stage = stages.get(stageId);
+		
+			if (stage == null) {
+				throw new IDNotRecognisedException("Stage ID not recognized.");
+			}
+		
+			if (!stage.isValidLocation(location)) {
+				throw new InvalidLocationException("Location is out of stage bounds.");
+			}
+		
+			if (stage.getStageType() == StageType.TT) {
+				throw new InvalidStageTypeException("Climbs cannot be added to a time-trial stage.");
+			}
+		
+			// Assuming you have a method to generate unique checkpoint IDs
+			int checkpointId = generateUniqueCheckpointId();
+			Climb climb = new Climb(checkpointId, location, stageId, type, averageGradient, length);
+		
+			stage.addCheckpointToStage(checkpointId, climb); // addCheckpointToStage must accept checkpointId and climb
+		
+			return checkpointId; // Return the new climb's checkpoint ID
+		}
+		
 	}
 
 	@Override

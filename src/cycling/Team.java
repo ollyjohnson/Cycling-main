@@ -1,11 +1,11 @@
 package cycling;
 
-import cycling.Rider;
+import java.util.HashMap;
 
 public class Team {
     private int id;
     private String name;
-    private Rider[] riders;
+    private HashMap<Integer, Rider> riders;
     private String description;
 
     public Team(int id, String name, String description) {
@@ -24,35 +24,23 @@ public class Team {
     public String getTeamName(){
         return name;
     }
-    public Rider []getRiders(){
-        return riders;
+    public Rider[] getRiders(){
+        return riders.values().toArray(new Rider[0]);
     }
     public int [] getRiderIds(){
         int [] riderIds = new int[riders.length];
-        index = 0;
-        for(Rider rider: riders){
-            ridersIds[index++] = rider.getId();
+        int index = 0;
+        for(Rider riderId: riders.keySet()){
+            riderIds[index++] = riderId;
         }
         return riderIds;
     }
-    public void addRider(Rider rider) {
-        //change to array list?
-        Rider[] newRiders = new Rider[riders.length + 1];
-        System.arraycopy(riders, 0, newRiders, 0, riders.length);
-        newRiders[riders.length] = rider;
-        riders = newRiders;
+
+    public void addStage(Rider rider) {
+        riders.add(rider);
     }
 
     public void removeRider(int riderId){
-        //add error hadnling exception
-        for (int i = 0; i < riders.length; i++) {
-            if (riders[i].getRiderId() == riderId) {
-                Rider[] newRiders = new Rider[riders.length - 1];
-                System.arraycopy(riders, 0, newRiders, 0, i);
-                System.arraycopy(riders, i + 1, newRiders, i, riders.length - i - 1);
-                riders = newRiders;
-                return;
-            }
-        }
+        riders.remove(riderId);
     }
 }

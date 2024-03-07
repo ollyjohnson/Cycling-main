@@ -1,18 +1,18 @@
 package cycling;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Race {
     private int id;
     private String name;
     private String description;
-    public ArrayList<Stage> stages;
+    private HashMap<Integer, Stage> stages;
 
     public Race(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.stages = new ArrayList<>();
+        this.stages = new HashMap<>();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Race {
         String[] stageNames = new String[stages.size()];
         double totalLength = 0;
         int index = 0;
-        for(Stage stage : stages){
+        for(Stage stage : stages.values()){
             totalLength += stage.getLength();
             stageNames[index++] = stage.getStageName();
         }
@@ -41,7 +41,7 @@ public class Race {
         Race ID = %d
         Race name = %s
         Race description = %s
-        Stages in race = %s
+        Stages in race = %d
         Length of race = %.2f
         """.formatted(id, name, description, String.join("\n", stageNames), totalLength);
         return details;
@@ -51,25 +51,21 @@ public class Race {
         stages.add(stage);
     }
 
-    public void removeStage(int stageId) {
-        // add error handling
-        stages.removeIf(stage -> stage.getStageId() == stageId);
-    }
-
-    public ArrayList<Stage> stages() {
-        return null;
-    }
-
-    public ArrayList<Stage> getStages() {
-        return stages;
-    }
-
-    public void setStages(ArrayList<Stage> stages) {
-        this.stages = stages;
+    public void removeStage(int stageId){
+        stages.remove(stageId);
     }
 
     public int getNumberOfStages(){
         return stages.size();
+    }
+
+    public int [] getStageIds(){
+        int [] stageIds = new int[stages.length];
+        int index = 0;
+        for(Stage stageId : stages.keySet()){
+            stageIds[index++] = stageId;
+        }
+        return stageIds;
     }
 
 }
