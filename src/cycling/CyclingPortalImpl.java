@@ -142,11 +142,10 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new InvalidLengthException("Stage length must be positive.");
 		}
 
+		//Validate the raceId
+		validateId(getRaceIds(), raceId);
 		// Find the race by ID.
 		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("No race found with ID: " + raceId);
-		}
 
 		int newStageId = stageIdCounter++; //Generate unique stage id
 
@@ -176,19 +175,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
-		// Iterate through all races.
-		for (Race race : races.values()) {
-			ArrayList<Stage> stages = race.getStages();
-			for (Stage stage : stages) {
-				// Check if the current stage's ID matches the given stageId.
-				if (stage.getId() == stageId) {
-					// If a match is found, return the length of this stage as double.
-					return (double) stage.getLength();
-				}
-			}
-		}
-		// If no stage with the given ID is found, throw an exception.
-		throw new IDNotRecognisedException("No stage found with ID: " + stageId);
+		validateId(getRaceStages(), stageId);
+		Stage stage = stages.get(stageId);
+		return stage.getLength();
 	}
 
 
@@ -220,7 +209,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
-			validateId(getRaceIds(), stageId);
+			validateId(getRaceStages(), stageId);
 			Stage stage = stages.get(stageId);
 		
 			if (stage == null) {

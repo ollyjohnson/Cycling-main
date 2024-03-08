@@ -68,6 +68,10 @@ public class Race {
         return stageIds;
     }
 
+    public Stage [] getStages(){
+        return stages.values().toArray(new Stage[0]);
+    }
+
 }
 
 
