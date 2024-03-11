@@ -12,6 +12,7 @@ public class Stage {
     private LocalDateTime startTime;
     private StageType stageType;
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
+    private boolean developmentComplete;
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -39,7 +40,19 @@ public class Stage {
         this.checkpoints.put(checkpointId, checkpoint);
     }
     public boolean isValidLocation(Double location){
-        return location >= 0 && location <= length;
+        return location > 0 && location <= length;
     }
+    public void setDevelopmentComplete() {
+        this.developmentComplete = true;
+    }
+    public boolean isStageDevelopmentComplete(){
+        return developmentComplete;
+    }
+    public Race getRace(){
+        return race;
+    }
+
+
+
 }
 
