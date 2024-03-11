@@ -8,7 +8,7 @@ public class Stage {
     private String name;
     private Race race;
     private String description;
-    private int length;
+    private double length;
     private LocalDateTime startTime;
     private StageType stageType;
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
@@ -32,11 +32,14 @@ public class Stage {
     public String getStageName(){
         return name;
     }
-    public int getLength(){
+    public double getLength(){
         return length;
     }
     public void addCheckpointToStage(int checkpointId, Checkpoint checkpoint) {
         this.checkpoints.put(checkpointId, checkpoint);
+    }
+    public boolean isValidLocation(Double location){
+        return location >= 0 && location <= length;
     }
 }
 

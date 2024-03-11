@@ -211,11 +211,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			InvalidStageTypeException {
 			validateId(getRaceStages(), stageId);
 			Stage stage = stages.get(stageId);
-		
-			if (stage == null) {
-				throw new IDNotRecognisedException("Stage ID not recognized.");
-			}
-		
+			
 			if (!stage.isValidLocation(location)) {
 				throw new InvalidLocationException("Location is out of stage bounds.");
 			}
