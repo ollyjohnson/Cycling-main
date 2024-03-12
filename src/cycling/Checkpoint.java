@@ -21,5 +21,11 @@ public class Checkpoint {
     public int getStageId(){
         return stageId;
     }
+    public double getLocation(){
+        return location;
+    }
+    public int getId(){
+        return id;
+    }
 }
 

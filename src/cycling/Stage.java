@@ -1,7 +1,9 @@
 package cycling;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Stage {
     private int id;
@@ -11,8 +13,10 @@ public class Stage {
     private double length;
     private LocalDateTime startTime;
     private StageType stageType;
-    private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
+    private Map<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
+    //a HashMap containing rider ids as keys which stores another hash map containing checkpoint ids and results
+    private Map<Integer, Map<Integer, Results>> riderResults = new HashMap<>();
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -54,17 +58,47 @@ public class Stage {
     public void removeCheckpointFromStage(int checkpointId) {
         this.checkpoints.remove(checkpointId);
     }
-    public int[] getCheckpointIds(){
-        int[] checkpointIds = new int [checkpoints.size()];
+    public int[] getOrderedCheckpointIds() {
+        int[] checkpointIds = new int[checkpoints.size()];
         int index = 0;
-        for(int id: checkpoints.keys()){
-            checkpointIds[index++] = id;
+        //creates an array of the checkpoint ids
+        for (Integer checkpointId : checkpoints.keys()) {
+            checkpointIds[index++] = checkpointId;
+        }
+        //orders the array by the location
+        for (int i = 0; i < checkpointIds.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < checkpointIds.length; j++) {
+                if (checkpoints.get(checkpointIds[j]).getLocation() < checkpoints.get(checkpointIds[minIndex]).getLocation()) {
+                    minIndex = j;
+                }
+            }
+            //if the location that is stored in i is greater than the location of the checkpoint in j then swap them around
+            if (minIndex != i) {
+                int temp = checkpointIds[i];
+                checkpointIds[i] = checkpointIds[minIndex];
+                checkpointIds[minIndex] = temp;
+            }
         }
         return checkpointIds;
     }
 
     public HashMap<Integer, Checkpoint> getCheckpoints(){
         return checkpoints;
+    }
+
+    public boolean riderHasResult(int riderId){
+        return(riderResults.containsKey(riderId));
+    }
+
+    public void recordRiderCheckpointTimes(int riderId, LocalTime[] checkpoints){
+        Results results = new Results(checkpoints);
+        Map<Integer, LocalTime> timesMap = new HashMap<>();
+        int[] checkpointIds = getOrderedCheckpointIds();
+        for (int i = 0; i < checkpointIds.length; i++) {
+            timesMap.put(checkpointIds[i], checkpointTimes[i]);
+        }
+
     }
 
 

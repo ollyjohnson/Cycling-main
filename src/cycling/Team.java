@@ -43,4 +43,7 @@ public class Team {
     public void removeRider(int riderId){
         riders.remove(riderId);
     }
+    public void removeAllRiders(){
+        riders.clear();
+    }
 }

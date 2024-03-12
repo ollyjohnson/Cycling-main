@@ -17,6 +17,10 @@ public class Rider {
     public int getRiderId(){
         return id;
     }
+    
+    public Team getTeam(){
+        return team;
+    }
 }
 
 

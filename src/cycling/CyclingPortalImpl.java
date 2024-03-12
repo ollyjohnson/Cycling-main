@@ -33,6 +33,12 @@ public class CyclingPortalImpl implements CyclingPortal {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalNameException("Team name cannot be null or empty.");
         }
+		if (name.length() > 30){
+			throw new IllegalNameException("Team name cannot be greater than 30 characters");
+		}
+		if (name.matches(".*\\s.*")) {
+			throw new InvalidNameException("Team name cannot contain whitespace.");
+		}
 		for (Team team : teams.values()) {
 			if (team.getTeamName().equals(name)){
 				throw new InvalidNameException("Team name already exists.");
@@ -281,6 +287,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	
 
 	@Override
+	//maybe make StageState an enum
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
 		Stage stage = findStageById(stageId);
 		if(stage.isStageWaitingForResults()){
@@ -291,10 +298,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	@Override
-	//change to ensure the list of checkpoints is ordered
 	public int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException {
 		Stage stage = findStageById(stageId);	
-		return stage.getCheckpointIds();
+		return stage.getOrderedCheckpointIds();
 	}
 
 	@Override
@@ -310,7 +316,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void removeTeam(int teamId) throws IDNotRecognisedException {
 		//check if the id is in the teams hash map
 		if (teams.containsKey(teamId)) {
-			//if it is remove it from the hash map
+			//if it is remove all riders from the team and then remove it from the hash map
+			Team team = teams.get(teamId);
+			team.removeAllRiders();
 			teams.remove(teamId);
 		} else {
 			//If not then throw the exception
@@ -343,7 +351,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new IllegalArgumentException("Illegal argument, name cannot be null: " + name);
 		}
 		//Validate birth year
-		else if (yearOfBirth < 1900){
+		if (yearOfBirth < 1900){
 			throw new IllegalArgumentException("Illegal argument, year of birth must be at least 1900: " + yearOfBirth);
 		}
 		//Validate the team id
@@ -360,9 +368,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		return newRiderId;
 	}
 	
-
-	@Override
-	public void removeRider(int riderId) throws IDNotRecognisedException {
+	public Rider findRiderById(int riderId){
 		//loop through each team
 		for(Team team : teams.values()){
 			//loop through the riders in each team
@@ -370,12 +376,22 @@ public class CyclingPortalImpl implements CyclingPortal {
 			for(Rider rider : riders){
 				//if their rider id's match then remove the rider from the team
 				if(rider.getRiderId() == riderId){
-					team.removeRider(riderId);
+					return rider;
 				}
 			}
 		}
+		// If no rider with the given riderId was found in any race, throw an exception
+		throw new IDNotRecognisedException("The rider ID " + riderId + " was not recognised in any team.");
 
 	}
+
+	@Override
+	public void removeRider(int riderId) throws IDNotRecognisedException {
+		Rider rider = findRiderById(riderId);
+		Team team = rider.getTeam();
+		team.removeRider(riderId);
+	}
+
 	/**
 	 * Record the times of a rider in a stage.
 	 * <p>
@@ -405,8 +421,16 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException,
 			InvalidStageStateException {
-				validateId(team.getRiders(), riderId);
-		// TODO Auto-generated method stub
+				//find the rider and stage and carry out validations
+				Rider rider = findRiderById(riderId);
+				Stage stage = findStageById(stageId);
+				if(checkpoints != (stage.getCheckpoints().size()+2)){
+					throw new InvalidCheckpointTimesException("The number of checkpoint times is not valid");
+				}
+				if(stage.riderHasResults(riderId)){
+					throw new DuplicatedResultException("The rider already has a result registered in this stage");
+				}
+				stage.recordRiderCheckpointTimes(riderId, checkpoints);
 
 	}
 
