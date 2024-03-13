@@ -2,7 +2,11 @@ package cycling;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Stage {
@@ -15,8 +19,8 @@ public class Stage {
     private StageType stageType;
     private Map<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
-    //a HashMap containing rider ids as keys which stores another hash map containing checkpoint ids and results
-    private Map<Integer, Map<Integer, Results>> riderResults = new HashMap<>();
+    private boolean timesAdjusted;
+    private Map<Integer, Results> riderResults = new HashMap<>();;
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -26,6 +30,7 @@ public class Stage {
         this.length = length;
         this.startTime = startTime;
         this.stageType = stageType;
+        this.timesAdjusted = true; //this is set to false when the adjusted rider elapsed times need to be updated
     }
     @Override
     public String toString(){
@@ -92,14 +97,68 @@ public class Stage {
     }
 
     public void recordRiderCheckpointTimes(int riderId, LocalTime[] checkpoints){
-        Results results = new Results(checkpoints);
-        Map<Integer, LocalTime> timesMap = new HashMap<>();
-        int[] checkpointIds = getOrderedCheckpointIds();
-        for (int i = 0; i < checkpointIds.length; i++) {
-            timesMap.put(checkpointIds[i], checkpointTimes[i]);
-        }
-
+        Results results = new Results(riderId, checkpoints);
+        //stores the rider id with their results
+        riderResults.put(riderId, results);
+        timesAdjusted = false;
     }
+
+    public LocalTime [] getRiderResults(int riderId){
+        //get the results for the specific rider
+        Results results = riderResults.get(riderId);
+        LocalTime [] checkpointTimes = results.getResults();
+        //create a new array with an additional space for the elapsed time
+        LocalTime [] resultTimes = new LocalTime[checkpointTimes.length+1];
+        //copy the contents of the checkpointTimes array
+        System.arraycopy(checkpointTimes, 0, resultTimes, 0, checkpointTimes.length);
+        //add the elapsed time to the end
+        resultTimes[resultTimes.length-1] = results.getElapsedTime();
+        return resultTimes;
+    }
+
+    public ArrayList<Results> getSortedListOfElapsedTimes() {
+        List<Results> riderRanksByElapsedTime = new ArrayList<>(riderResults.values());
+        Collections.sort(riderRanksByElapsedTime);
+        return riderRanksByElapsedTime;
+    }
+
+    public void adjustRiderElapsedTimes() {
+        //this if statement means the method will only be called if the times have been adjusted since the last call
+        if(!timesAdjusted){
+            List<Results> sortedElapsedTimes = getSortedListOfElapsedTimes();
+            if (!sortedElapsedTimes.isEmpty()) {
+                sortedElapsedTimes.get(0).setAdjustedElapsedTime(sortedElapsedTimes.get(0).getElapsedTime());
+                sortedElapsedTimes.get(0).setRank(1);
+            }
+            for (int i = 1; i < sortedElapsedTimes.size(); i++) {
+                Results previousResult = sortedElapsedTimes.get(i - 1);
+                Results currentResult = sortedElapsedTimes.get(i);
+                LocalTime previousElapsedTime = previousResult.getElapsedTime();
+                LocalTime currentElapsedTime = currentResult.getElapsedTime();
+                int previousRank = previousResult.getRank();
+                long secondsBetween = ChronoUnit.SECONDS.between(previousElapsedTime, currentElapsedTime);
+                if (secondsBetween < 1) {
+                    currentResult.setAdjustedElapsedTime(previousResult.getAdjustedElapsedTime());
+                    currentResult.setRank(previousRank);
+                } else {
+                    currentResult.setAdjustedElapsedTime(currentElapsedTime);
+                    currentResult.setRank(i+1);
+                }
+            }
+            timesAdjusted = true; // resets timesAdjusted to be true until a new result is added
+        }
+    }
+
+    public LocalTime [] getRiderElapsedTime(int riderId){
+        //get the results for the specific rider
+        Results results = riderResults.get(riderId);
+        LocalTime adjustedElapsedTime = results.getAdjustedElapsedTime();
+        return adjustedElapsedTime;
+    }
+
+
+
+
 
 
 }

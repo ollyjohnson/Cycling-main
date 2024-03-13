@@ -392,31 +392,6 @@ public class CyclingPortalImpl implements CyclingPortal {
 		team.removeRider(riderId);
 	}
 
-	/**
-	 * Record the times of a rider in a stage.
-	 * <p>
-	 * The state of this MiniCyclingPortal must be unchanged if any
-	 * exceptions are thrown.
-	 * 
-	 * @param stageId     The ID of the stage the result refers to.
-	 * @param riderId     The ID of the rider.
-	 * @param checkpointTimes An array of times at which the rider reached each of the
-	 *                    checkpoints of the stage, including the start time and the
-	 *                    finish line.
-	 * @throws IDNotRecognisedException    If the ID does not match to any rider or
-	 *                                     stage in the system.
-	 * @throws DuplicatedResultException   Thrown if the rider has already a result
-	 *                                     for the stage. Each rider can have only
-	 *                                     one result per stage.
-	 * @throws InvalidCheckpointTimesException Thrown if the length of checkpointTimes is
-	 *                                     not equal to n+2, where n is the number
-	 *                                     of checkpoints in the stage; +2 represents
-	 *                                     the start time and the finish time of the
-	 *                                     stage.
-	 * @throws InvalidStageStateException  Thrown if the stage is not "waiting for
-	 *                                     results". Results can only be added to a
-	 *                                     stage while it is "waiting for results".
-	 */
 	@Override
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException,
@@ -436,14 +411,22 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//find the rider and stage and carry out validations
+		Rider rider = findRiderById(riderId);
+		Stage stage = findStageById(stageId);
+		LocalTime [] results  = stage.getRiderResults();
+		return results;
 	}
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//find the rider and stage and carry out validations
+		Rider rider = findRiderById(riderId);
+		Stage stage = findStageById(stageId);
+		//this will updated the elapsed times if needed
+		stage.adjustRiderElapsedTimes();
+		LocalTime adjustedElapsedTimeInStage = stage.getAdjustedElapsedTime();
+		return adjustedElapsedTimeInStage;
 	}
 
 	@Override
