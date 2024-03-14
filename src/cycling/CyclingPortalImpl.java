@@ -425,26 +425,30 @@ public class CyclingPortalImpl implements CyclingPortal {
 		Stage stage = findStageById(stageId);
 		//this will updated the elapsed times if needed
 		stage.adjustRiderElapsedTimes();
-		LocalTime adjustedElapsedTimeInStage = stage.getAdjustedElapsedTime();
+		LocalTime adjustedElapsedTimeInStage = stage.getAdjustedElapsedTime(riderId);
 		return adjustedElapsedTimeInStage;
 	}
 
 	@Override
 	public void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		//find the rider and stage and carry out validations
+		Rider rider = findRiderById(riderId);
+		Stage stage = findStageById(stageId);
+		stage.removeRiderResults(riderId);
 	}
 
 	@Override
 	public int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//find the stage and carry out validations
+		Stage stage = findStageById(stageId);
+		return stage.getRiderRanks();
 	}
 
 	@Override
 	public LocalTime[] getRankedAdjustedElapsedTimesInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//find the stage and carry out validations
+		Stage stage = findStageById(stageId);
+		return stage.getRankedAdjustedElapsedTimes();
 	}
 
 	@Override

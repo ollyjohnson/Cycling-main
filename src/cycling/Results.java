@@ -53,5 +53,19 @@ public class Results implements Comparable <Results> {
         return checkpointTimes;
     }
 
+    public void setRank(int rank){
+        this.rank = rank;
+    }
     
+    public int getRank(){
+        return rank;
+    }
+
+    public void setPoints(int points){
+        this.points = points;
+    }
+    
+    public int getPoints(){
+        return points;
+    }
 }

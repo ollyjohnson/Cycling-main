@@ -137,23 +137,60 @@ public class Stage {
                 LocalTime currentElapsedTime = currentResult.getElapsedTime();
                 int previousRank = previousResult.getRank();
                 long secondsBetween = ChronoUnit.SECONDS.between(previousElapsedTime, currentElapsedTime);
+                currentResult.setRank(i+1);
                 if (secondsBetween < 1) {
                     currentResult.setAdjustedElapsedTime(previousResult.getAdjustedElapsedTime());
-                    currentResult.setRank(previousRank);
                 } else {
                     currentResult.setAdjustedElapsedTime(currentElapsedTime);
-                    currentResult.setRank(i+1);
                 }
             }
             timesAdjusted = true; // resets timesAdjusted to be true until a new result is added
         }
     }
 
-    public LocalTime [] getRiderElapsedTime(int riderId){
+    public LocalTime getRiderAdjustedElapsedTime(int riderId){
         //get the results for the specific rider
         Results results = riderResults.get(riderId);
         LocalTime adjustedElapsedTime = results.getAdjustedElapsedTime();
         return adjustedElapsedTime;
+    }
+
+    public void removeRiderResults(int riderId){
+        riderResults.remove(riderId);
+    }
+
+    public int [] getRiderRanks(){
+        int [] ranks = new int [riderResults.size()];
+        for(Result result : riderResults.values()){
+            int riderRank = result.getRank();
+            ranks[riderRank-1] = result.getRiderId();
+        }
+        return ranks;
+    }
+
+    public LocalTime [] getRankedAdjustedElapsedTimes(){
+        int[] riderRanks = getRiderRanks();
+        LocalTime [] rankedAdjustedElapsedTimes = new LocalTime [riderRanks.length];
+        for(int i = 0; i < riderRanks.length; i++){
+            rankedAdjustedElapsedTimes[i] = riderResults.get(riderRanks[i]).getAdjustedElapsedTime();
+        }
+        return rankedAdjustedElapsedTimes;
+    }
+
+    private int[] getPointsDistributionByStageType() {
+        switch (stageType) {
+            case FLAT:
+                return new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
+            case MEDIUM_MOUNTAIN:
+                return new int[]{30, 25, 22, 19, 17, 15, 13, 11, 9, 7, 6, 5, 4, 3, 2};
+            case HIGH_MOUNTAIN:
+                return new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+            case TT:
+                return new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+            // Include cases for other types of stages
+            default:
+                return new int[0]; // Default to no points for unrecognized stage types
+        }
     }
 
 
