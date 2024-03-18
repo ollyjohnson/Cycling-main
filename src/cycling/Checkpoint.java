@@ -27,5 +27,8 @@ public class Checkpoint {
     public int getId(){
         return id;
     }
+    public CheckpointType getType(){
+        return type;
+    }
 }
 

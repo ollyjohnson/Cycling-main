@@ -459,35 +459,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public int[] getRidersMountainPointsInStage(int stageId) throws IDNotRecognisedException {
 		Stage stage = findStageById(stageId); // Validate and retrieve the stage.
-		if (stage == null) {
-			throw new IDNotRecognisedException("Stage ID not recognized: " + stageId);
-		}
-
-		// Assuming Stage class can give a sorted list of Results and has a method to retrieve climbs
-		ArrayList<Results> sortedResults = stage.getSortedListOfElapsedTimes();
-
-		// Map to store riderId and their accumulated mountain points
-		Map<Integer, Integer> riderMountainPoints = new HashMap<>();
-
-		// Assuming Stage has a method getCheckpoints which includes climbs
-		for (Checkpoint checkpoint : stage.getCheckpoints().values()) {
-			if (checkpoint instanceof Climb) {
-				Climb climb = (Climb) checkpoint;
-				// Assuming Climb class has a method to distribute points based on position
-				Map<Integer, Integer> climbPoints = climb.distributePoints();
-				climbPoints.forEach((riderId, points) ->
-						riderMountainPoints.merge(riderId, points, Integer::sum));
-			}
-		}
-
-		// Convert the sorted results to an array of mountain points
-		int[] mountainPoints = new int[sortedResults.size()];
-		for (int i = 0; i < sortedResults.size(); i++) {
-			Results result = sortedResults.get(i);
-			mountainPoints[i] = riderMountainPoints.getOrDefault(result.getRiderId(), 0);
-		}
-
-		return mountainPoints;
+		return stage.getOrderedMountainPoints();
 	}
 
 
