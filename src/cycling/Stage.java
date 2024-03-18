@@ -20,7 +20,7 @@ public class Stage {
     private Map<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
     private boolean timesAdjusted;
-    private Map<Integer, Results> riderResults = new HashMap<>();;
+    private Map<Integer, Results> riderResults = new HashMap<>();
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -117,7 +117,7 @@ public class Stage {
     }
 
     public ArrayList<Results> getSortedListOfElapsedTimes() {
-        List<Results> riderRanksByElapsedTime = new ArrayList<>(riderResults.values());
+        ArrayList<Results> riderRanksByElapsedTime = new ArrayList<>(riderResults.values());
         Collections.sort(riderRanksByElapsedTime);
         return riderRanksByElapsedTime;
     }
@@ -125,7 +125,7 @@ public class Stage {
     public void adjustRiderElapsedTimes() {
         //this if statement means the method will only be called if the times have been adjusted since the last call
         if(!timesAdjusted){
-            List<Results> sortedElapsedTimes = getSortedListOfElapsedTimes();
+            ArrayList<Results> sortedElapsedTimes = getSortedListOfElapsedTimes();
             int [] pointsDistribution = getPointsDistributionByStageType();
             if (!sortedElapsedTimes.isEmpty()) {
                 sortedElapsedTimes.get(0).setAdjustedElapsedTime(sortedElapsedTimes.get(0).getElapsedTime());
@@ -222,7 +222,7 @@ public class Stage {
             case HC:
                 return new int[]{20, 15, 12, 10, 8, 6, 4, 2};
             default:
-                return new int[0]; // Default to no points for types that do not award mountain points, such as SPRINT
+                return new int[0]; // if type is li
         }
     }
 
