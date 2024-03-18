@@ -68,4 +68,12 @@ public class Results implements Comparable <Results> {
     public int getPoints(){
         return points;
     }
+
+    public Integer getMountainPoints() {
+        return mountainPoints;
+    }
+
+    public void setMountainPoints(Integer mountainPoints) {
+        this.mountainPoints = mountainPoints;
+    }
 }
