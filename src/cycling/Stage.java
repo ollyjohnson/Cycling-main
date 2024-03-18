@@ -17,10 +17,10 @@ public class Stage {
     private double length;
     private LocalDateTime startTime;
     private StageType stageType;
-    private Map<Integer, Checkpoint> checkpoints = new HashMap<>();
+    private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
     private boolean timesAdjusted;
-    private Map<Integer, Results> riderResults = new HashMap<>();
+    private HashMap<Integer, Results> riderResults = new HashMap<>();;
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
@@ -67,7 +67,7 @@ public class Stage {
         int[] checkpointIds = new int[checkpoints.size()];
         int index = 0;
         //creates an array of the checkpoint ids
-        for (Integer checkpointId : checkpoints.keys()) {
+        for (Integer checkpointId : checkpoints.keySet()) {
             checkpointIds[index++] = checkpointId;
         }
         //orders the array by the location
@@ -168,7 +168,7 @@ public class Stage {
 
     public int [] getRiderRanks(){
         int [] ranks = new int [riderResults.size()];
-        for(Result result : riderResults.values()){
+        for(Results result : riderResults.values()){
             int riderRank = result.getRank();
             ranks[riderRank-1] = result.getRiderId();
         }
@@ -201,7 +201,7 @@ public class Stage {
 
     public int[] getOrderedPoints(){
         int[] orderedPoints = new int[riderResults.size()];
-        for(Result result: riderResults.values()){
+        for(Results result: riderResults.values()){
             int rank = result.getRank();
             int points = result.getPoints();
             orderedPoints[rank-1] = points;
@@ -226,17 +226,34 @@ public class Stage {
         }
     }
 
-    public void assignMountainPoints(){
-        for(Checkpoint checkpoint : checkpoints.values()){
-            CheckpointType checkpointType = checkpoint.getType();
-            int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
-            
-
+    public void assignMountainPoints() {
+        for (Checkpoint checkpoint : checkpoints.values()) {
+            if (checkpoint instanceof Climb) {
+                CheckpointType checkpointType = checkpoint.getType();
+                int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
+    
+                // Retrieve the checkpoint times for each rider and sort them
+                List<RiderResult> sortedRiderResults = getSortedRiderResultsForClimb(checkpoint);
+    
+                // Assign points to each rider based on the sorted results
+                for (int i = 0; i < sortedRiderResults.size() && i < mountainPointsDistribution.length; i++) {
+                    RiderResult riderResult = sortedRiderResults.get(i);
+                    int riderId = riderResult.getRiderId();
+                    int points = mountainPointsDistribution[i];
+                    
+                    // Assuming you have a way to access and set a rider's mountain points in Results
+                    Results results = riderResults.get(riderId);
+                    if (results != null) {
+                        results.addMountainPoints(points); // Pseudocode: Implement a method to add points to results
+                    }
+                }
+            }
         }
-    }
+    
+
     public int[] getOrderedMountainPoints(){
         int[] orderedMountainPoints = new int[riderResults.size()];
-        for(Result result: riderResults.values()){
+        for(Results result: riderResults.values()){
             int rank = result.getRank();
             int mountainPoints = result.getMountainPoints();
             orderedMountainPoints[rank-1] = mountainPoints;

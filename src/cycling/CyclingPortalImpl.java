@@ -458,9 +458,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int[] getRidersMountainPointsInStage(int stageId) throws IDNotRecognisedException {
-		//find the stage and carry out validations
-		Stage stage = findStageById(stageId);
-		return stage.getMountainPoints();
+		Stage stage = findStageById(stageId); // Validate and retrieve the stage.
+		return stage.getOrderedMountainPoints();
 	}
 
 
