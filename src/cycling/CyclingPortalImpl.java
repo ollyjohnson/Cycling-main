@@ -453,8 +453,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//find the stage and carry out validations
+		Stage stage = findStageById(stageId);
+		return stage.getOrderedPoints();
 	}
 
 	@Override

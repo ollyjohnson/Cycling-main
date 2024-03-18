@@ -107,10 +107,10 @@ public class Stage {
         //get the results for the specific rider
         Results results = riderResults.get(riderId);
         LocalTime [] checkpointTimes = results.getResults();
-        //create a new array with an additional space for the elapsed time
-        LocalTime [] resultTimes = new LocalTime[checkpointTimes.length+1];
+        //create a new array for the result times
+        LocalTime [] resultTimes = new LocalTime[checkpointTimes.length-1];
         //copy the contents of the checkpointTimes array
-        System.arraycopy(checkpointTimes, 0, resultTimes, 0, checkpointTimes.length);
+        System.arraycopy(checkpointTimes, 1, resultTimes, 0, checkpointTimes.length - 1);
         //add the elapsed time to the end
         resultTimes[resultTimes.length-1] = results.getElapsedTime();
         return resultTimes;
@@ -126,18 +126,25 @@ public class Stage {
         //this if statement means the method will only be called if the times have been adjusted since the last call
         if(!timesAdjusted){
             List<Results> sortedElapsedTimes = getSortedListOfElapsedTimes();
+            int [] pointsDistribution = getPointsDistributionByStageType();
             if (!sortedElapsedTimes.isEmpty()) {
                 sortedElapsedTimes.get(0).setAdjustedElapsedTime(sortedElapsedTimes.get(0).getElapsedTime());
                 sortedElapsedTimes.get(0).setRank(1);
+                sortedElapsedTimes.get(0).setPoints(pointsDistribution[0]);
             }
             for (int i = 1; i < sortedElapsedTimes.size(); i++) {
                 Results previousResult = sortedElapsedTimes.get(i - 1);
                 Results currentResult = sortedElapsedTimes.get(i);
                 LocalTime previousElapsedTime = previousResult.getElapsedTime();
                 LocalTime currentElapsedTime = currentResult.getElapsedTime();
-                int previousRank = previousResult.getRank();
                 long secondsBetween = ChronoUnit.SECONDS.between(previousElapsedTime, currentElapsedTime);
                 currentResult.setRank(i+1);
+                if(i < pointsDistribution.length){
+                    currentResult.setPoints(pointsDistribution[i]);
+                }
+                else{
+                    currentResult.setPoints(0);
+                }
                 if (secondsBetween < 1) {
                     currentResult.setAdjustedElapsedTime(previousResult.getAdjustedElapsedTime());
                 } else {
@@ -187,11 +194,57 @@ public class Stage {
                 return new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
             case TT:
                 return new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-            // Include cases for other types of stages
             default:
-                return new int[0]; // Default to no points for unrecognized stage types
+                return new int[0];
         }
     }
+
+    public int[] getOrderedPoints(){
+        int[] orderedPoints = new int[riderResults.size()];
+        for(Result result: riderResults.values()){
+            int rank = result.getRank();
+            int points = result.getPoints();
+            orderedPoints[rank-1] = points;
+        }
+        return orderedPoints;
+    }
+
+    private int[] getMountainPointsDistributionByType(CheckpointType type) {
+        switch (type) {
+            case C4:
+                return new int[]{1};
+            case C3:
+                return new int[]{1, 1};
+            case C2:
+                return new int[]{2, 1};
+            case C1:
+                return new int[]{5, 3, 2, 1};
+            case HC:
+                return new int[]{20, 15, 12, 10, 8, 6, 4, 2};
+            default:
+                return new int[0]; // Default to no points for types that do not award mountain points, such as SPRINT
+        }
+    }
+
+    public void assignMountainPoints(){
+        for(Checkpoint checkpoint : checkpoints.values()){
+            CheckpointType checkpointType = checkpoint.getType();
+            int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
+            
+
+        }
+    }
+    public int[] getOrderedMountainPoints(){
+        int[] orderedMountainPoints = new int[riderResults.size()];
+        for(Result result: riderResults.values()){
+            int rank = result.getRank();
+            int mountainPoints = result.getMountainPoints();
+            orderedMountainPoints[rank-1] = mountainPoints;
+        }
+        return orderedMountainPoints;
+    }
+
+
 
 
 
