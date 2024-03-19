@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class Stage {
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
     private boolean timesAdjusted;
+    private boolean mountainPointsUpdated;
     private HashMap<Integer, Results> riderResults = new HashMap<>();;
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
@@ -31,6 +33,7 @@ public class Stage {
         this.startTime = startTime;
         this.stageType = stageType;
         this.timesAdjusted = true; //this is set to false when the adjusted rider elapsed times need to be updated
+        this.mountainPointsUpdated = true; //this is set to false when the adjusted rider elapsed times need to be updated
     }
     @Override
     public String toString(){
@@ -101,6 +104,7 @@ public class Stage {
         //stores the rider id with their results
         riderResults.put(riderId, results);
         timesAdjusted = false;
+        mountainPointsUpdated = false;
     }
 
     public LocalTime [] getRiderResults(int riderId){
@@ -226,32 +230,36 @@ public class Stage {
         }
     }
 
+    //this will only get called if mountain points havent been updated since new results have been added
     public void assignMountainPoints() {
-        for (Checkpoint checkpoint : checkpoints.values()) {
-            if (checkpoint instanceof Climb) {
-                CheckpointType checkpointType = checkpoint.getType();
-                int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
-    
-                // Retrieve the checkpoint times for each rider and sort them
-                List<RiderResult> sortedRiderResults = getSortedRiderResultsForClimb(checkpoint);
-    
-                // Assign points to each rider based on the sorted results
-                for (int i = 0; i < sortedRiderResults.size() && i < mountainPointsDistribution.length; i++) {
-                    RiderResult riderResult = sortedRiderResults.get(i);
-                    int riderId = riderResult.getRiderId();
-                    int points = mountainPointsDistribution[i];
-                    
-                    // Assuming you have a way to access and set a rider's mountain points in Results
-                    Results results = riderResults.get(riderId);
-                    if (results != null) {
-                        results.addMountainPoints(points); // Pseudocode: Implement a method to add points to results
-                    }
+    for (Checkpoint checkpoint : checkpoints.values()) {
+        if (checkpoint instanceof Climb) {
+            CheckpointType checkpointType = checkpoint.getType();
+            int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
+            ArrayList<Results> riderResultsAtClimb = new ArrayList<>();
+            int checkpointIndex = 1;//starts at index 1 as the first time is the start time
+            for (Results result : riderResults.values()) {
+                if (result.getCheckpointTimeAtIndex(checkpointIndex)!= null) {
+                    riderResultsAtClimb.add(result);
                 }
             }
-        }
-    
+            riderResultsAtClimb.sort(Comparator.comparing(result -> result.getCheckpointTimeAtIndex(checkpointIndex++)));
 
+            // Assign points to riders based on their order
+            for (int i = 0; i < riderResultsAtClimb.size() && i < mountainPointsDistribution.length; i++) {
+                Results result = riderResultsAtClimb.get(i);
+                result.addMountainPoints(mountainPointsDistribution[i]);
+            }
+        }
+    }
+}
+
+    
+    //returns a list of riders mountain points in order that the riders finished the stageS
     public int[] getOrderedMountainPoints(){
+        if(!mountainPointsUpdated){
+            adjustMountainPoints();
+        }
         int[] orderedMountainPoints = new int[riderResults.size()];
         for(Results result: riderResults.values()){
             int rank = result.getRank();

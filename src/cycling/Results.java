@@ -1,9 +1,9 @@
 package cycling;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Results implements Comparable <Results> {
     private LocalTime [] checkpointTimes;
@@ -73,7 +73,11 @@ public class Results implements Comparable <Results> {
         return mountainPoints;
     }
 
-    public void setMountainPoints(Integer mountainPoints) {
-        this.mountainPoints = mountainPoints;
+    public void addMountainPoints(Integer mountainPoints) {
+        this.mountainPoints += mountainPoints;
+    }
+
+    public LocalTime getCheckPointTimeAtIndex(int index){
+        return checkpointTimes[index];
     }
 }
