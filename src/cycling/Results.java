@@ -12,6 +12,7 @@ public class Results implements Comparable <Results>, Serializable {
     private int rank;
     private int points;
     private int mountainPoints;
+    private int sprintPoints;
 
     public Results(int riderId, LocalTime[] checkpointTimes){
         this.checkpointTimes = checkpointTimes;
@@ -19,6 +20,7 @@ public class Results implements Comparable <Results>, Serializable {
         this.rank = 0;
         this.points = 0;
         this.mountainPoints = 0;
+        this.sprintPoints = 0;
     }
 
     public LocalTime calculateElapsedTime(){
@@ -72,11 +74,19 @@ public class Results implements Comparable <Results>, Serializable {
         return mountainPoints;
     }
 
-    public void addMountainPoints(Integer mountainPoints) {
+    public void addMountainPoints(int mountainPoints) {
         this.mountainPoints += mountainPoints;
     }
 
-    public LocalTime getCheckPointTimeAtIndex(int index){
+    public LocalTime getCheckpointTimeAtIndex(int index){
         return checkpointTimes[index];
+    }
+
+    public void addSprintPoints(int sprintPoints) {
+        this.sprintPoints += sprintPoints;
+    }
+
+    public Integer getSprintPoints() {
+        return sprintPoints;
     }
 }

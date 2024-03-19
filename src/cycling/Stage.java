@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Stage {
     private int id;
@@ -21,7 +19,7 @@ public class Stage {
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
     private boolean waitingForResults;
     private boolean timesAdjusted;
-    private boolean mountainPointsUpdated;
+    private boolean checkpointPointsUpdated;
     private HashMap<Integer, Results> riderResults = new HashMap<>();;
 
     public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
@@ -33,7 +31,7 @@ public class Stage {
         this.startTime = startTime;
         this.stageType = stageType;
         this.timesAdjusted = true; //this is set to false when the adjusted rider elapsed times need to be updated
-        this.mountainPointsUpdated = true; //this is set to false when the adjusted rider elapsed times need to be updated
+        this.checkpointPointsUpdated = true; //this is set to false when the adjusted rider elapsed times need to be updated
     }
     @Override
     public String toString(){
@@ -104,7 +102,7 @@ public class Stage {
         //stores the rider id with their results
         riderResults.put(riderId, results);
         timesAdjusted = false;
-        mountainPointsUpdated = false;
+        checkpointPointsUpdated = false;
     }
 
     public LocalTime [] getRiderResults(int riderId){
@@ -204,16 +202,20 @@ public class Stage {
     }
 
     public int[] getOrderedPoints(){
+        if(!checkpointPointsUpdated){
+            assignCheckpointPoints();
+        }
+        adjustRiderElapsedTimes();
         int[] orderedPoints = new int[riderResults.size()];
         for(Results result: riderResults.values()){
             int rank = result.getRank();
-            int points = result.getPoints();
+            int points = result.getPoints() + result.getSprintPoints();
             orderedPoints[rank-1] = points;
         }
         return orderedPoints;
     }
 
-    private int[] getMountainPointsDistributionByType(CheckpointType type) {
+    private int[] getCheckpointPointsDistributionByType(CheckpointType type) {
         switch (type) {
             case C4:
                 return new int[]{1};
@@ -225,40 +227,47 @@ public class Stage {
                 return new int[]{5, 3, 2, 1};
             case HC:
                 return new int[]{20, 15, 12, 10, 8, 6, 4, 2};
+            case SPRINT:
+                return new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
             default:
-                return new int[0]; // if type is li
+                return new int[0];
         }
     }
 
-    //this will only get called if mountain points havent been updated since new results have been added
-    public void assignMountainPoints() {
+    //this will only get called if checkpoint points havent been updated since new results have been added
+    public void assignCheckpointPoints() {
+    int checkpointIndex = 1;
     for (Checkpoint checkpoint : checkpoints.values()) {
-        if (checkpoint instanceof Climb) {
             CheckpointType checkpointType = checkpoint.getType();
-            int[] mountainPointsDistribution = getMountainPointsDistributionByType(checkpointType);
-            ArrayList<Results> riderResultsAtClimb = new ArrayList<>();
-            int checkpointIndex = 1;//starts at index 1 as the first time is the start time
+            int[] checkpointPointsDistribution = getCheckpointPointsDistributionByType(checkpointType);
+            ArrayList<Results> riderResultsAtCheckpoint = new ArrayList<>();
+            final int currentCheckpointIndex = checkpointIndex;
             for (Results result : riderResults.values()) {
-                if (result.getCheckpointTimeAtIndex(checkpointIndex)!= null) {
-                    riderResultsAtClimb.add(result);
+                if (result.getCheckpointTimeAtIndex(currentCheckpointIndex)!= null) {
+                    riderResultsAtCheckpoint.add(result);
                 }
             }
-            riderResultsAtClimb.sort(Comparator.comparing(result -> result.getCheckpointTimeAtIndex(checkpointIndex++)));
+            riderResultsAtCheckpoint.sort(Comparator.comparing(result -> result.getCheckpointTimeAtIndex(currentCheckpointIndex)));
 
             // Assign points to riders based on their order
-            for (int i = 0; i < riderResultsAtClimb.size() && i < mountainPointsDistribution.length; i++) {
-                Results result = riderResultsAtClimb.get(i);
-                result.addMountainPoints(mountainPointsDistribution[i]);
+            for (int i = 0; i < riderResultsAtCheckpoint.size() && i < checkpointPointsDistribution.length; i++) {
+                Results result = riderResultsAtCheckpoint.get(i);
+                if (checkpoint instanceof Climb) {
+                    result.addMountainPoints(checkpointPointsDistribution[i]);
+                } else if (checkpoint.getType() == CheckpointType.SPRINT) {
+                    result.addSprintPoints(checkpointPointsDistribution[i]);
+                }
             }
-        }
+        checkpointIndex++;
     }
+    checkpointPointsUpdated = true;
 }
 
     
     //returns a list of riders mountain points in order that the riders finished the stageS
     public int[] getOrderedMountainPoints(){
-        if(!mountainPointsUpdated){
-            adjustMountainPoints();
+        if(!checkpointPointsUpdated){
+            assignCheckpointPoints();
         }
         int[] orderedMountainPoints = new int[riderResults.size()];
         for(Results result: riderResults.values()){
@@ -267,6 +276,18 @@ public class Stage {
             orderedMountainPoints[rank-1] = mountainPoints;
         }
         return orderedMountainPoints;
+    }
+
+    public StageType getStageType(){
+        return stageType;
+    }
+
+    public HashMap<Integer, Results> getAllRiderResultsInStage(){
+        return riderResults;
+    }
+
+    public int[] getAllRidersInStage(){
+        return riderResults.keySet();
     }
 
 

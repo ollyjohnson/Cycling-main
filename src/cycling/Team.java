@@ -12,7 +12,7 @@ public class Team {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.riders = new Rider[0];
+        this.riders = new HashMap<Integer, Rider>();
     }
     @Override
     public String toString(){
@@ -28,16 +28,16 @@ public class Team {
         return riders.values().toArray(new Rider[0]);
     }
     public int [] getRiderIds(){
-        int [] riderIds = new int[riders.length];
+        int [] riderIds = new int[riders.size()];
         int index = 0;
-        for(Rider riderId: riders.keySet()){
+        for(int riderId: riders.keySet()){
             riderIds[index++] = riderId;
         }
         return riderIds;
     }
 
-    public void addStage(Rider rider) {
-        riders.add(rider);
+    public void addRider(int riderId, Rider rider) {
+        riders.put(riderId, rider);
     }
 
     public void removeRider(int riderId){

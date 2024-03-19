@@ -29,17 +29,17 @@ public class CyclingPortalImpl implements CyclingPortal {
 	// Validates a race name ensuring it is not null, empty, or already used.
 	private void validateTeamName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalNameException("Team name cannot be null or empty.");
+            throw new InvalidNameException("Team name cannot be null or empty.");
         }
 		if (name.length() > 30){
-			throw new IllegalNameException("Team name cannot be greater than 30 characters");
+			throw new InvalidNameException("Team name cannot be greater than 30 characters");
 		}
 		if (name.matches(".*\\s.*")) {
 			throw new InvalidNameException("Team name cannot contain whitespace.");
 		}
 		for (Team team : teams.values()) {
 			if (team.getTeamName().equals(name)){
-				throw new InvalidNameException("Team name already exists.");
+				throw new IllegalNameException("Team name already exists.");
 			}
 		}
     }
@@ -47,11 +47,17 @@ public class CyclingPortalImpl implements CyclingPortal {
 	// Validates a race name ensuring it is not null, empty, or already used.
 	private void validateRaceName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalNameException("Team name cannot be null or empty.");
+            throw new InvalidNameException("Team name cannot be null or empty.");
         }
-		for (Race race : races.values()) {
+		if (name.length() > 30){
+			throw new InvalidNameException("Team name cannot be greater than 30 characters");
+		}
+		if (name.matches(".*\\s.*")) {
+			throw new InvalidNameException("Team name cannot contain whitespace.");
+		}
+		for (Team race : races.values()) {
 			if (race.getRaceName().equals(name)){
-				throw new InvalidNameException("Team name already exists.");
+				throw new IllegalNameException("Team name already exists.");
 			}
 		}
     }
@@ -83,21 +89,12 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	//  * Creates a new race with the given name and description, and adds it to the list of races.
 	@Override
-	public int createRace(String name, String description) {
-		int newRaceId = raceIdCounter;
-		try {
-			validateRaceName(name);
-			newRaceId = raceIdCounter++;
-			Race newRace = new Race(newRaceId, name, description);
-			races.put(newRaceId, newRace);
-			return newRaceId;
-		} catch (IllegalNameException e) {
-			System.err.println("Illegal race name provided: " + e.getMessage());
-			return 0;
-		} catch (InvalidNameException e) {
-			System.err.println("Invalid race name format: " + e.getMessage());
-			return 0;
-		}
+	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
+		validateRaceName(name);
+		int newRaceId = raceIdCounter++;
+		Race newRace = new Race(newRaceId, name, description);
+		races.put(newRaceId, newRace);
+		return newRaceId;
 	}
 
     //Provides details of a race identified by its ID.
@@ -114,17 +111,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 	// Removes a race by its ID.
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
-		boolean found = false;
-		for(Race race: races.values()){
-			if(race.getRaceId()==raceId){
-				races.remove(race);
-				found = true;
-			}
-		}
-		if(!found){
-			throw new IDNotRecognisedException("No team found with ID: " + raceId);
-		}
-
+		validateId(getRaceIds(), raceId);
+		races.remove(raceId);
 	}
 
 	@Override
@@ -135,27 +123,36 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 
 	@Override
-	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, String stageType)
+	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) 
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
 		// Validate the stage name.
-		if (stageName == null || stageName.trim().isEmpty()) {
-			throw new IllegalNameException("Stage name cannot be null or empty.");
+		if (stageName == null || name.trim().isEmpty()) {
+            throw new InvalidNameException("Stage name cannot be null or empty.");
+        }
+		if (stageName.length() > 30){
+			throw new InvalidNameException("Stage name cannot be greater than 30 characters");
 		}
-
+		if (name.matches(".*\\s.*")) {
+			throw new InvalidNameException("Stage name cannot contain whitespace.");
+		}
+		for (Race race : races.values()) {
+			for (Stage stage : race.getStages()){
+				if (stage.getStageName().equals(stageName)){
+					throw new IllegalNameException("Stage name already exists.");
+				}
+			}
+		}
 		// Validate the length of the stage.
-		if (length <= 0) {
-			throw new InvalidLengthException("Stage length must be positive.");
+		if (length < 5) {
+			throw new InvalidLengthException("Stage length must be at least 5km.");
 		}
-
 		//Validate the raceId
 		validateId(getRaceIds(), raceId);
 		// Find the race by ID.
 		Race race = races.get(raceId);
-
 		int newStageId = stageIdCounter++; //Generate unique stage id
-
 		// Create a new Stage object.
-		Stage newStage = new Stage(newStageId, stageName, race, description, length, startTime, stageType);
+		Stage newStage = new Stage(newStageId, stageName, race, description, length, startTime, type);
 		race.addStage(newStage);
 		// Return the ID of the newly created Stage.
 		return newStageId;
@@ -306,7 +303,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		validateTeamName(name);
 		int newTeamId = teamIdCounter++;
 		Team newTeam = new Team(newTeamId, name, description);
-		teams.add(newTeam);
+		teams.put(newTeamId, newTeam);
 		return newTeamId;
 	}
 
@@ -360,7 +357,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		// Create a new rider and add to the team
 		int newRiderId = riderIdCounter++;
 		Rider newRider = new Rider(newRiderId, name, yearOfBirth, riderTeam);
-		riderTeam.addRider(newRider);
+		riderTeam.addRider(newRiderId, newRider);
 		
 		// Return the new rider ID
 		return newRiderId;
@@ -500,18 +497,12 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public void removeRaceByName(String name) throws NameNotRecognisedException {
-		// Flag to track if a race with the given name has been found
+		//Boolean to track if a race with the given name has been found
 		boolean raceFound = false;
-		// Iterate over the races to find the one with the matching name
-		Iterator<Map.Entry<Integer, Race>> iterator = races.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<Integer, Race> entry = iterator.next();
-			Race race = entry.getValue();
-			if (race.getRaceName().equals(name)) {
-				// Once found, remove the race from the collection
-				iterator.remove();
+		for(Race race:races.values()){
+			if(race.getRaceName().equals(name)){
+				races.remove(race.getRaceId());
 				raceFound = true;
-				break;
 			}
 		}
 		if (!raceFound) {
@@ -522,16 +513,14 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
-		Race race = races.get(raceId); // Assume races is a Map<Integer, Race>
-		if (race == null) {
-			throw new IDNotRecognisedException("Race ID not recognised: " + raceId);
-		}
-
-		Map<Integer, Long> riderTotalTimes = new HashMap<>(); // riderId to total time in nanoseconds
+		validateId(getRaceIds(), raceId);
+		Race race = races.get(raceId);
+		HashMap<Integer, LocalTime> riderTotalTimes = new HashMap<>(); // riderId to total time
 
 		for (Stage stage : race.getStages()) {
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
-				riderTotalTimes.merge(result.getRiderId(), result.getAdjustedElapsedTime().toNanoOfDay(), Long::sum);
+			HashMap riderResults = stage.getAllRiderResultsInStage();
+			for(Result result: riderResults.values()){
+				
 			}
 		}
 
