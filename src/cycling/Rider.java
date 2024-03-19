@@ -1,7 +1,8 @@
 package cycling;
 
-import cycling.Team;
-public class Rider {
+import java.io.Serializable;
+
+public class Rider implements Serializable {
     private int id;
     private String name;
     private Team team;

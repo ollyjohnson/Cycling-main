@@ -1,8 +1,9 @@
 package cycling;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Race {
+public class Race implements Serializable {
     private int id;
     private String name;
     private String description;

@@ -490,11 +490,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException {
-		// Attempt to read and deserialize the object from the file
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
 			CyclingPortalImpl loadedPortal = (CyclingPortalImpl) in.readObject();
 		} catch (IOException | ClassNotFoundException e) {
-			// Rethrow any exceptions to be handled by the caller
 			throw e;
 		}
 	}

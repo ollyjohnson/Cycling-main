@@ -1,11 +1,10 @@
 package cycling;
 
-import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.io.Serializable;
+import java.time.Duration;
 
-public class Results implements Comparable <Results> {
+public class Results implements Comparable <Results>, Serializable {
     private LocalTime [] checkpointTimes;
     private LocalTime elapsedTime;
     private LocalTime adjustedElapsedTime;
@@ -49,7 +48,7 @@ public class Results implements Comparable <Results> {
         return riderId;
     }
 
-    public LocalTime getResults(){
+    public LocalTime[] getResults(){
         return checkpointTimes;
     }
 
