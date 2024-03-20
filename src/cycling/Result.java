@@ -1,21 +1,22 @@
 package cycling;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.io.Serializable;
 import java.time.Duration;
 
-public class Results implements Comparable <Results>, Serializable {
-    private LocalTime [] checkpointTimes;
-    private LocalTime elapsedTime;
-    private LocalTime adjustedElapsedTime;
+public class Result implements Comparable <Result>, Serializable {
+
+    private LocalTime [] stageTimes;
+    private LocalTime totalAdjustedElapsedTime;
     private int riderId;
     private int rank;
     private int points;
     private int mountainPoints;
     private int sprintPoints;
+    private HashMap<Integer, StageResult> stageResults = new HashMap<>();
 
-    public Results(int riderId, LocalTime[] checkpointTimes){
-        this.checkpointTimes = checkpointTimes;
+    public Result(int riderId){
         this.riderId = riderId;
         this.rank = 0;
         this.points = 0;
@@ -23,27 +24,21 @@ public class Results implements Comparable <Results>, Serializable {
         this.sprintPoints = 0;
     }
 
-    public LocalTime calculateElapsedTime(){
-        Duration duration = Duration.between(checkpointTimes[0], checkpointTimes[checkpointTimes.length - 1]);
-        elapsedTime = LocalTime.ofNanoOfDay(duration.toNanos());
-        return elapsedTime;
-    }
-
-    public LocalTime getElapsedTime(){
-        return elapsedTime;
-    }
-
     @Override
-    public int compareTo(Results other) {
-        return this.elapsedTime.compareTo(other.elapsedTime);
+    public int compareTo(Result other) {
+        return this.totalAdjustedElapsedTime.compareTo(other.totalAdjustedElapsedTime);
     }
 
-    public void setAdjustedElapsedTime(LocalTime adjustedElapsedTime) {
-        this.adjustedElapsedTime = adjustedElapsedTime;
+    public void addStageResult(int stageId, StageResult stageResult) {
+        stageResults.put(stageId, stageResult);
+    }
+
+    public void setAdjustedElapsedTime(LocalTime totalAdjustedElapsedTime) {
+        this.totalAdjustedElapsedTime = totalAdjustedElapsedTime;
     }
 
     public LocalTime getAdjustedElapsedTime() {
-        return adjustedElapsedTime;
+        return totalAdjustedElapsedTime;
     }
 
     public int getRiderId(){
@@ -51,7 +46,7 @@ public class Results implements Comparable <Results>, Serializable {
     }
 
     public LocalTime[] getResults(){
-        return checkpointTimes;
+        return stageTimes;
     }
 
     public void setRank(int rank){

@@ -391,18 +391,21 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException,
 			InvalidStageStateException {
-				//find the rider and stage and carry out validations
-				Rider rider = findRiderById(riderId);
-				Stage stage = findStageById(stageId);
-				if(checkpoints != (stage.getCheckpoints().size()+2)){
-					throw new InvalidCheckpointTimesException("The number of checkpoint times is not valid");
-				}
-				if(stage.riderHasResults(riderId)){
-					throw new DuplicatedResultException("The rider already has a result registered in this stage");
-				}
-				stage.recordRiderCheckpointTimes(riderId, checkpoints);
-
-	}
+		//find the rider stage and race and carry out validations
+		Stage stage = findStageById(stageId);
+		Race race = stage.getRace();
+		Rider rider = findRiderById(riderId);
+		if(race.riderHasResult(riderId)){
+			Result raceResult = race.getOverallResult();
+		}
+		else{
+			Result raceResult = new Result(riderId);
+		}
+		StageResult stageResult = new StageResult(riderId, checkpoints);
+		stage.addStageResult(riderId, stageResult);
+		raceResult.addStageResult(stageId, stageResult);
+		race.getOverallResults().put(riderId, raceResult);
+	 }
 
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
@@ -515,26 +518,21 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
 		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		HashMap<Integer, LocalTime> riderTotalTimes = new HashMap<>(); // riderId to total time
+		HashMap<Integer, LocalTime> riderTotalTimes = new HashMap<>();
 
 		for (Stage stage : race.getStages()) {
-			HashMap riderResults = stage.getAllRiderResultsInStage();
-			for(Result result: riderResults.values()){
-				
+			HashMap<Integer, Result> riderResults = stage.getAllRiderResultsInStage();
+			for (StageResult result : riderResults.values()) {
+				int riderId = result.getRiderId();
+				Rider rider = findRiderById(riderId);
+				LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
+				LocalTime currentTotalTime = riderTotalTimes.getOrDefault(riderId, LocalTime.MIN);
+				int newTotalTimeSeconds = currentTotalTime.toSecondOfDay() + adjustedElapsedTime.toSecondOfDay();
+				LocalTime newTotalTime = LocalTime.ofSecondOfDay(newTotalTimeSeconds % (24 * 3600));
+				rider.setTotalTime(newTotalTime);
 			}
 		}
-
-		// Create an array of total times
-		Long[] totalTimes = riderTotalTimes.values().toArray(new Long[0]);
-		Arrays.sort(totalTimes); // Sort the total times
-
-		// Convert sorted total times to LocalTime[]
-		LocalTime[] sortedTimes = new LocalTime[totalTimes.length];
-		for (int i = 0; i < totalTimes.length; i++) {
-			sortedTimes[i] = LocalTime.ofNanoOfDay(totalTimes[i]);
-		}
-
-		return sortedTimes;
+		return riderTotalTimes;// Hash map of rider ids and their total times in the race
 	}
 
 
@@ -553,7 +551,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 		// Aggregate points and times from all stages
 		for (Stage stage : race.getStages()) {
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
+			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
 				int riderId = result.getRiderId();
 				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
 				riderTimes.merge(riderId, result.getAdjustedElapsedTime().toNanoOfDay(), Long::sum);
@@ -588,8 +586,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 		Map<Integer, Long> riderTimes = new HashMap<>();
 
 		for (Stage stage : race.getStages()) {
-			// Assuming each Stage has a method to get a sorted list of Results
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
+			// Assuming each Stage has a method to get a sorted list of StageResult
+			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
 				int riderId = result.getRiderId();
 				riderMountainPoints.merge(riderId, result.getMountainPoints(), Integer::sum);
 				riderTimes.merge(riderId, result.getAdjustedElapsedTime().toNanoOfDay(), Long::sum);
@@ -624,7 +622,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 		// Aggregate points from all stages
 		for (Stage stage : race.getStages()) {
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
+			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
 				int riderId = result.getRiderId();
 				// Assuming getPoints returns the points won by the rider in the stage
 				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
@@ -659,7 +657,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		// Aggregate points from all stages for each rider.
 		for (Stage stage : race.getStages()) {
 			// Assume each stage provides a sorted list of results, including points for each rider.
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
+			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
 				int riderId = result.getRiderId();
 				// Update the total points for each rider, summing across stages.
 				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
@@ -693,7 +691,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 		// Loop through each stage in the race to aggregate mountain points for each rider.
 		for (Stage stage : race.getStages()) {
-			for (Results result : stage.getSortedListOfElapsedTimes()) {
+			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
 				int riderId = result.getRiderId();
 				riderMountainPoints.merge(riderId, result.getMountainPoints(), Integer::sum);
 			}

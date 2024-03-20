@@ -1,6 +1,7 @@
 package cycling;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 public class Race implements Serializable {
@@ -8,6 +9,7 @@ public class Race implements Serializable {
     private String name;
     private String description;
     private HashMap<Integer, Stage> stages;
+    private HashMap<Integer, Result> riderResults = new HashMap<>();
 
     public Race(int id, String name, String description) {
         this.id = id;
@@ -71,6 +73,24 @@ public class Race implements Serializable {
 
     public Stage [] getStages(){
         return stages.values().toArray(new Stage[0]);
+    }
+
+    public boolean riderHasResult(int riderId){
+        return(riderResults.containsKey(riderId));
+    }
+
+
+    public void addStageResult(Stage stage, int riderId, LocalTime[] checkpoints) {
+        if(riderResults.containsKey(riderId)){
+            Result overallResult = new Result(riderId);
+        }
+        else{
+            Result overallResult = riderResults.get(riderId);
+        }
+        StageResult stageResult = new StageResult(stage.getStageId(), checkpoints);
+        overallResult.addStageResult(stageResult);
+        riderResults.put(riderId, overallResult);
+        stage.addStageResult(riderId, stageResult);
     }
 
 }
