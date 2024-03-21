@@ -23,8 +23,9 @@ public class Result implements Comparable <Result>, Serializable {
         this.points = 0;
         this.mountainPoints = 0;
         this.sprintPoints = 0;
+        this.totalAdjustedElapsedTime = LocalTime.MIN;
     }
-
+    
     @Override
     public int compareTo(Result other) {
         return this.totalAdjustedElapsedTime.compareTo(other.totalAdjustedElapsedTime);
@@ -32,20 +33,17 @@ public class Result implements Comparable <Result>, Serializable {
 
     public void addStageResult(int stageId, StageResult stageResult) {
         stageResults.put(stageId, stageResult);
+        //this updates the totalAdjustedElapsedTime to ensure it is up to date
+        LocalTime adjustedElapsedTime = stageResult.getAdjustedElapsedTime();
+        totalAdjustedElapsedTime = addLocalTimes(totalAdjustedElapsedTime, adjustedElapsedTime);
     }
 
-    public void setAdjustedElapsedTime(LocalTime totalAdjustedElapsedTime) {
-        this.totalAdjustedElapsedTime = totalAdjustedElapsedTime;
+    private LocalTime addLocalTimes(LocalTime time1, LocalTime time2) {
+        long totalNanoseconds = time1.toNanoOfDay() + time2.toNanoOfDay();
+        return LocalTime.ofNanoOfDay(totalNanoseconds);
     }
-
-    public LocalTime getTotalAdjustedElapsedTime() {
-        long totalNanoseconds = 0;
-        for (StageResult result : stageResults.values()) {
-            LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
-            totalNanoseconds += adjustedElapsedTime.toNanoOfDay();
-        }
-        LocalTime totalAdjustedElapsedTime = LocalTime.ofNanoOfDay(totalNanoseconds);
     
+    public LocalTime getTotalAdjustedElapsedTime() {
         return totalAdjustedElapsedTime;
     }
 
@@ -65,8 +63,8 @@ public class Result implements Comparable <Result>, Serializable {
         return rank;
     }
 
-    public void setPoints(int points){
-        this.points = points;
+    public void addPoints(int points){
+        this.points += points;
     }
     
     public int getPoints(){
@@ -87,5 +85,21 @@ public class Result implements Comparable <Result>, Serializable {
 
     public Integer getSprintPoints() {
         return sprintPoints;
+    }
+
+    public void calculateTotalPoints(){
+        this.points = 0;
+        this.sprintPoints = 0;
+        for(StageResult result: stageResults.values()){
+            addPoints(result.getPoints());
+            addSprintPoints(result.getSprintPoints());
+        }
+    }
+
+    public void calculateMountainPoints(){
+        this.mountainPoints = 0;
+        for(StageResult result: stageResults.values()){
+            addMountainPoints(result.getMountainPoints());
+        }
     }
 }

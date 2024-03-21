@@ -70,7 +70,7 @@ public class StageResult implements Comparable <StageResult>, Serializable {
         return points;
     }
 
-    public Integer getMountainPoints() {
+    public int getMountainPoints() {
         return mountainPoints;
     }
 
@@ -86,11 +86,11 @@ public class StageResult implements Comparable <StageResult>, Serializable {
         this.sprintPoints += sprintPoints;
     }
 
-    public Integer getSprintPoints() {
+    public int getSprintPoints() {
         return sprintPoints;
     }
 
-    public LocalTime [] getCheckpoinTimes(){
+    public LocalTime [] getCheckpointTimes(){
         return checkpointTimes;
     }
 }

@@ -2,6 +2,11 @@ package cycling;
 
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Race implements Serializable {
@@ -63,9 +68,9 @@ public class Race implements Serializable {
     }
 
     public int [] getStageIds(){
-        int [] stageIds = new int[stages.length];
+        int [] stageIds = new int[stages.size()];
         int index = 0;
-        for(Stage stageId : stages.keySet()){
+        for(Integer stageId : stages.keySet()){
             stageIds[index++] = stageId;
         }
         return stageIds;
@@ -87,6 +92,98 @@ public class Race implements Serializable {
     public Result addOverallResult(int riderId , Result raceResult){
         return riderResults.put(riderId, raceResult);
     }
+
+    public int[] getRiders(){
+        int[] ridersInRace = new int[riderResults.size()];
+        int index = 0;
+        for (Integer key : riderResults.keySet()) {
+            ridersInRace[index++] = key;
+        }
+        return ridersInRace;
+    }
+
+    public ArrayList<Result> getSortedListOfResults() {
+        ArrayList<Result> riderResultsByTime = new ArrayList<>(riderResults.values());
+        Collections.sort(riderResultsByTime);
+        return riderResultsByTime;
+    }
+
+    public LocalTime[] getSortedListOfTimes(){
+        ArrayList<Result> riderResultsByTime = getSortedListOfResults();
+        LocalTime[] sortedListOfTimes = new LocalTime[riderResultsByTime.size()];
+        int index = 0;
+        for(Result result: riderResultsByTime){
+            sortedListOfTimes[index++] = result.getTotalAdjustedElapsedTime();
+        }
+        return sortedListOfTimes;
+    }
+
+    public int[] getRiderIdsByTotalTime(){
+        ArrayList<Result> riderResultsByTime = getSortedListOfResults();
+        int[] sortedListOfIds = new int[riderResultsByTime.size()];
+        int index = 0;
+        for(Result result: riderResultsByTime){
+            sortedListOfIds[index++] = result.getRiderId();
+        }
+        return sortedListOfIds;
+    }
+
+    public int[] getTotalPoints(){
+        ArrayList<Result> riderResultsByTime = getSortedListOfResults();
+        int[] sortedListOfPoints= new int[riderResultsByTime.size()];
+        int index = 0;
+        for(Result result: riderResultsByTime){
+            result.calculateTotalPoints();
+            sortedListOfPoints[index++] = result.getPoints() + result.getSprintPoints();
+        }
+        return sortedListOfPoints;
+    }
+
+    public int[] getMountainPoints(){
+        ArrayList<Result> riderResultsByTime = getSortedListOfResults();
+        int[] sortedListOfMountainPoints= new int[riderResultsByTime.size()];
+        int index = 0;
+        for(Result result: riderResultsByTime){
+            result.calculateMountainPoints();
+            sortedListOfMountainPoints[index++] = result.getMountainPoints();
+        }
+        return sortedListOfMountainPoints;
+    }
+
+    public int[] getRiderIdsByPoints() {
+        ArrayList<Result> sortedResultsByPoints = new ArrayList<>(riderResults.values());
+        Collections.sort(sortedResultsByPoints, new Comparator<Result>() {
+            @Override
+            public int compare(Result r1, Result r2) {
+                int totalPoints1 = r1.getPoints() + r1.getSprintPoints();
+                int totalPoints2 = r2.getPoints() + r2.getSprintPoints();
+                return Integer.compare(totalPoints2, totalPoints1);
+            }
+        });
+        int[] riderIdsSortedByPoints = new int[sortedResultsByPoints.size()];
+        for (int i = 0; i < sortedResultsByPoints.size(); i++) {
+            riderIdsSortedByPoints[i] = sortedResultsByPoints.get(i).getRiderId();
+        }
+        return riderIdsSortedByPoints;
+    }
+
+    public int[] getRiderIdsByMountianPoints() {
+        ArrayList<Result> sortedResultsByMountainPoints = new ArrayList<>(riderResults.values());
+        Collections.sort(sortedResultsByMountainPoints, new Comparator<Result>() {
+            @Override
+            public int compare(Result r1, Result r2) {
+                int totalPoints1 = r1.getMountainPoints();
+                int totalPoints2 = r2.getMountainPoints();
+                return Integer.compare(totalPoints2, totalPoints1);
+            }
+        });
+        int[] riderIdsSortedByMountainPoints = new int[sortedResultsByMountainPoints.size()];
+        for (int i = 0; i < sortedResultsByMountainPoints.size(); i++) {
+            riderIdsSortedByMountainPoints[i] = sortedResultsByMountainPoints.get(i).getRiderId();
+        }
+        return riderIdsSortedByMountainPoints;
+    }
+
 
 }
 

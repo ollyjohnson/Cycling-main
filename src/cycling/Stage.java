@@ -22,7 +22,7 @@ public class Stage {
     private boolean checkpointPointsUpdated;
     private HashMap<Integer, StageResult> riderResults = new HashMap<>();
 
-    public Stage(int id, String name, Race race, String description, int length, LocalDateTime startTime, StageType stageType) {
+    public Stage(int id, String name, Race race, String description, double length, LocalDateTime startTime, StageType stageType) {
         this.id = id;
         this.name = name;
         this.description = description;

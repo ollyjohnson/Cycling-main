@@ -55,7 +55,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		if (name.matches(".*\\s.*")) {
 			throw new InvalidNameException("Team name cannot contain whitespace.");
 		}
-		for (Team race : races.values()) {
+		for (Race race : races.values()) {
 			if (race.getRaceName().equals(name)){
 				throw new IllegalNameException("Team name already exists.");
 			}
@@ -124,7 +124,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) 
-			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
+		throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
 		// Validate the stage name.
 		if (stageName == null || stageName.trim().isEmpty()) {
             throw new InvalidNameException("Stage name cannot be null or empty.");
@@ -395,11 +395,12 @@ public class CyclingPortalImpl implements CyclingPortal {
 		Stage stage = findStageById(stageId);
 		Race race = stage.getRace();
 		Rider rider = findRiderById(riderId);
+		Result raceResult;
 		if(race.riderHasResult(riderId)){
-			Result raceResult = race.getOverallResult(riderId);
+			raceResult = race.getOverallResult(riderId);
 		}
 		else{
-			Result raceResult = new Result(riderId);
+			raceResult = new Result(riderId);
 		}
 		StageResult stageResult = new StageResult(riderId, checkpoints);
 		stage.addStageResult(riderId, stageResult);
@@ -412,7 +413,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		//find the rider and stage and carry out validations
 		Rider rider = findRiderById(riderId);
 		Stage stage = findStageById(stageId);
-		LocalTime [] results  = stage.getRiderResults();
+		LocalTime [] results  = stage.getRiderResults(riderId);
 		return results;
 	}
 
@@ -423,7 +424,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		Stage stage = findStageById(stageId);
 		//this will updated the elapsed times if needed
 		stage.adjustRiderElapsedTimes();
-		LocalTime adjustedElapsedTimeInStage = stage.getAdjustedElapsedTime(riderId);
+		LocalTime adjustedElapsedTimeInStage = stage.getRiderAdjustedElapsedTime(riderId);
 		return adjustedElapsedTimeInStage;
 	}
 
@@ -513,202 +514,55 @@ public class CyclingPortalImpl implements CyclingPortal {
 		}
 	}
 
+	@Override
+	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException{
+		//validate and retrieve race
+		validateId(getRaceIds(), raceId);
+		Race race = races.get(raceId);
+		return race.getRiderIdsByTotalTime();
+	}
 
 	@Override
 	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
+		//validate and retrieve race
 		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		HashMap<Integer, LocalTime> riderTotalTimes = new HashMap<>();
-
-		for (Stage stage : race.getStages()) {
-			HashMap<Integer, Result> riderResults = stage.getAllRiderResultsInStage();
-			for (StageResult result : riderResults.values()) {
-				int riderId = result.getRiderId();
-				Rider rider = findRiderById(riderId);
-				LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
-				LocalTime currentTotalTime = riderTotalTimes.getOrDefault(riderId, LocalTime.MIN);
-				int newTotalTimeSeconds = currentTotalTime.toSecondOfDay() + adjustedElapsedTime.toSecondOfDay();
-				LocalTime newTotalTime = LocalTime.ofSecondOfDay(newTotalTimeSeconds % (24 * 3600));
-				rider.setTotalTime(newTotalTime);
-			}
-		}
-		return riderTotalTimes;// Hash map of rider ids and their total times in the race
+		return race.getSortedListOfTimes();
 	}
 
 
 	@Override
 	public int[] getRidersPointsInRace(int raceId) throws IDNotRecognisedException {
-		// Check if the race exists
+		//validate and retrieve race
+		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("Race ID not recognised: " + raceId);
-		}
-
-		// A map to store the sum of points for each rider
-		Map<Integer, Integer> riderPoints = new HashMap<>();
-		// A map to store total adjusted times for sorting purposes
-		Map<Integer, Long> riderTimes = new HashMap<>();
-
-		// Aggregate points and times from all stages
-		for (Stage stage : race.getStages()) {
-			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
-				int riderId = result.getRiderId();
-				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
-				riderTimes.merge(riderId, result.getAdjustedElapsedTime().toNanoOfDay(), Long::sum);
-			}
-		}
-
-		// Sort riders by their total adjusted times
-		List<Map.Entry<Integer, Long>> sortedEntries = new ArrayList<>(riderTimes.entrySet());
-		sortedEntries.sort(Map.Entry.comparingByValue());
-
-		// Create an array to hold the sorted points
-		int[] sortedPoints = new int[sortedEntries.size()];
-		for (int i = 0; i < sortedEntries.size(); i++) {
-			int riderId = sortedEntries.get(i).getKey();
-			sortedPoints[i] = riderPoints.getOrDefault(riderId, 0);
-		}
-
-		return sortedPoints;
+		return race.getTotalPoints();
 	}
 
 
 	@Override
 	public int[] getRidersMountainPointsInRace(int raceId) throws IDNotRecognisedException {
+		//validate and retrieve race
+		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("Race ID not recognised: " + raceId);
-		}
-
-		// A map to store the sum of mountain points for each rider
-		Map<Integer, Integer> riderMountainPoints = new HashMap<>();
-		// A map to store total adjusted times for sorting purposes
-		Map<Integer, Long> riderTimes = new HashMap<>();
-
-		for (Stage stage : race.getStages()) {
-			// Assuming each Stage has a method to get a sorted list of StageResult
-			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
-				int riderId = result.getRiderId();
-				riderMountainPoints.merge(riderId, result.getMountainPoints(), Integer::sum);
-				riderTimes.merge(riderId, result.getAdjustedElapsedTime().toNanoOfDay(), Long::sum);
-			}
-		}
-
-		// Sort the entries by total adjusted elapsed time
-		List<Map.Entry<Integer, Long>> sortedEntries = new ArrayList<>(riderTimes.entrySet());
-		sortedEntries.sort(Map.Entry.comparingByValue());
-
-		// Create an array to hold the sorted mountain points
-		int[] sortedMountainPoints = new int[sortedEntries.size()];
-		for (int i = 0; i < sortedEntries.size(); i++) {
-			int riderId = sortedEntries.get(i).getKey();
-			sortedMountainPoints[i] = riderMountainPoints.getOrDefault(riderId, 0);
-		}
-
-		return sortedMountainPoints;
+		return race.getMountainPoints();
 	}
 
 
 	@Override
 	public int[] getRidersPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// Validate race existence
+		//validate and retrieve race
+		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("Race ID not recognised: " + raceId);
-		}
-
-		// Map to store the sum of points for each rider
-		Map<Integer, Integer> riderPoints = new HashMap<>();
-
-		// Aggregate points from all stages
-		for (Stage stage : race.getStages()) {
-			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
-				int riderId = result.getRiderId();
-				// Assuming getPoints returns the points won by the rider in the stage
-				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
-			}
-		}
-
-		// Sort the map entries by value (points) in descending order
-		List<Map.Entry<Integer, Integer>> sortedEntries = new ArrayList<>(riderPoints.entrySet());
-		sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-
-		// Convert the sorted map entries to an array of rider IDs
-		int[] rankedRiders = new int[sortedEntries.size()];
-		for (int i = 0; i < sortedEntries.size(); i++) {
-			rankedRiders[i] = sortedEntries.get(i).getKey();
-		}
-
-		return rankedRiders;
+		return race.getRiderIdsByPoints();
 	}
-
-
-	@Override
-	public int[] getRidersPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// Retrieve the race object using the given raceId. If the race doesn't exist, throw an exception.
-		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("No race found with the ID: " + raceId);
-		}
-
-		// A map to accumulate total points for each rider across all stages of the race.
-		Map<Integer, Integer> riderPoints = new HashMap<>();
-
-		// Aggregate points from all stages for each rider.
-		for (Stage stage : race.getStages()) {
-			// Assume each stage provides a sorted list of results, including points for each rider.
-			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
-				int riderId = result.getRiderId();
-				// Update the total points for each rider, summing across stages.
-				riderPoints.merge(riderId, result.getPoints(), Integer::sum);
-			}
-		}
-
-		// Sort riders by their total points in descending order to determine the points classification.
-		List<Map.Entry<Integer, Integer>> sortedEntries = new ArrayList<>(riderPoints.entrySet());
-		sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-
-		// Prepare an array to store the ranked rider IDs based on points classification.
-		int[] rankedRiders = new int[sortedEntries.size()];
-		for (int i = 0; i < sortedEntries.size(); i++) {
-			rankedRiders[i] = sortedEntries.get(i).getKey(); // Extract rider IDs in the sorted order.
-		}
-
-		return rankedRiders; // Return the array of rider IDs, sorted by their points classification rank.
-	}
-
 
 	@Override
 	public int[] getRidersMountainPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// Attempt to retrieve the specified race using the raceId. If no such race exists, throw an exception.
+		//validate and retrieve race
+		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		if (race == null) {
-			throw new IDNotRecognisedException("No race found with the ID: " + raceId);
-		}
-
-		// Create a map to keep track of each rider's total mountain points across all stages.
-		Map<Integer, Integer> riderMountainPoints = new HashMap<>();
-
-		// Loop through each stage in the race to aggregate mountain points for each rider.
-		for (Stage stage : race.getStages()) {
-			for (StageResult result : stage.getSortedListOfElapsedTimes()) {
-				int riderId = result.getRiderId();
-				riderMountainPoints.merge(riderId, result.getMountainPoints(), Integer::sum);
-			}
-		}
-
-		// Convert the map entries to a list and sort it by mountain points in descending order.
-		List<Map.Entry<Integer, Integer>> sortedEntries = new ArrayList<>(riderMountainPoints.entrySet());
-		sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-
-		// Prepare an array to hold the rider IDs, ordered according to their mountain classification ranking.
-		int[] rankedRiders = new int[sortedEntries.size()];
-		for (int i = 0; i < sortedEntries.size(); i++) {
-			rankedRiders[i] = sortedEntries.get(i).getKey();
-		}
-
-		return rankedRiders;
+		return race.getRiderIdsByMountianPoints();
 	}
-
 
 }
