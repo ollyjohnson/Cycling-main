@@ -126,13 +126,13 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) 
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
 		// Validate the stage name.
-		if (stageName == null || name.trim().isEmpty()) {
+		if (stageName == null || stageName.trim().isEmpty()) {
             throw new InvalidNameException("Stage name cannot be null or empty.");
         }
 		if (stageName.length() > 30){
 			throw new InvalidNameException("Stage name cannot be greater than 30 characters");
 		}
-		if (name.matches(".*\\s.*")) {
+		if (stageName.matches(".*\\s.*")) {
 			throw new InvalidNameException("Stage name cannot contain whitespace.");
 		}
 		for (Race race : races.values()) {
@@ -153,7 +153,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		int newStageId = stageIdCounter++; //Generate unique stage id
 		// Create a new Stage object.
 		Stage newStage = new Stage(newStageId, stageName, race, description, length, startTime, type);
-		race.addStage(newStage);
+		race.addStage(newStageId, newStage);
 		// Return the ID of the newly created Stage.
 		return newStageId;
 	}
@@ -363,7 +363,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		return newRiderId;
 	}
 	
-	public Rider findRiderById(int riderId){
+	public Rider findRiderById(int riderId) throws IDNotRecognisedException{
 		//loop through each team
 		for(Team team : teams.values()){
 			//loop through the riders in each team
@@ -396,7 +396,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		Race race = stage.getRace();
 		Rider rider = findRiderById(riderId);
 		if(race.riderHasResult(riderId)){
-			Result raceResult = race.getOverallResult();
+			Result raceResult = race.getOverallResult(riderId);
 		}
 		else{
 			Result raceResult = new Result(riderId);
@@ -404,7 +404,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		StageResult stageResult = new StageResult(riderId, checkpoints);
 		stage.addStageResult(riderId, stageResult);
 		raceResult.addStageResult(stageId, stageResult);
-		race.getOverallResults().put(riderId, raceResult);
+		race.addOverallResult(riderId, raceResult);
 	 }
 
 	@Override

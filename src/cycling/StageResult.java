@@ -1,9 +1,6 @@
 package cycling;
 
 import java.time.LocalTime;
-
-import javax.naming.spi.DirStateFactory.Result;
-
 import java.io.Serializable;
 import java.time.Duration;
 
@@ -91,5 +88,9 @@ public class StageResult implements Comparable <StageResult>, Serializable {
 
     public Integer getSprintPoints() {
         return sprintPoints;
+    }
+
+    public LocalTime [] getCheckpoinTimes(){
+        return checkpointTimes;
     }
 }

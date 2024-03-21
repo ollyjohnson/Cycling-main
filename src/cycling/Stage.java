@@ -107,7 +107,7 @@ public class Stage {
     public LocalTime [] getRiderResults(int riderId){
         //get the results for the specific rider
         StageResult results = riderResults.get(riderId);
-        LocalTime [] checkpointTimes = results.getResults();
+        LocalTime [] checkpointTimes = results.getCheckpointTimes();
         //create a new array for the result times
         LocalTime [] resultTimes = new LocalTime[checkpointTimes.length-1];
         //copy the contents of the checkpointTimes array
@@ -286,7 +286,12 @@ public class Stage {
     }
 
     public int[] getAllRidersInStage(){
-        return riderResults.keySet();
+        int[] ridersInStage = new int[riderResults.size()];
+        int index = 0;
+        for (Integer key : riderResults.keySet()) {
+            ridersInStage[index++] = key;
+        }
+        return ridersInStage;
     }
 
 

@@ -50,8 +50,8 @@ public class Race implements Serializable {
         return details;
     }
 
-    public void addStage(Stage stage) {
-        stages.add(stage);
+    public void addStage(int stageId, Stage stage) {
+        stages.put(stageId, stage);
     }
 
     public void removeStage(int stageId){
@@ -80,17 +80,12 @@ public class Race implements Serializable {
     }
 
 
-    public void addStageResult(Stage stage, int riderId, LocalTime[] checkpoints) {
-        if(riderResults.containsKey(riderId)){
-            Result overallResult = new Result(riderId);
-        }
-        else{
-            Result overallResult = riderResults.get(riderId);
-        }
-        StageResult stageResult = new StageResult(stage.getStageId(), checkpoints);
-        overallResult.addStageResult(stageResult);
-        riderResults.put(riderId, overallResult);
-        stage.addStageResult(riderId, stageResult);
+    public Result getOverallResult(int riderId){
+        return riderResults.get(riderId);
+    }
+
+    public Result addOverallResult(int riderId , Result raceResult){
+        return riderResults.put(riderId, raceResult);
     }
 
 }

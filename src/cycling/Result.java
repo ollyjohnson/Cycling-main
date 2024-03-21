@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.HashMap;
 
 public class Result implements Comparable <Result>, Serializable {
 
@@ -37,7 +38,14 @@ public class Result implements Comparable <Result>, Serializable {
         this.totalAdjustedElapsedTime = totalAdjustedElapsedTime;
     }
 
-    public LocalTime getAdjustedElapsedTime() {
+    public LocalTime getTotalAdjustedElapsedTime() {
+        long totalNanoseconds = 0;
+        for (StageResult result : stageResults.values()) {
+            LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
+            totalNanoseconds += adjustedElapsedTime.toNanoOfDay();
+        }
+        LocalTime totalAdjustedElapsedTime = LocalTime.ofNanoOfDay(totalNanoseconds);
+    
         return totalAdjustedElapsedTime;
     }
 
@@ -71,10 +79,6 @@ public class Result implements Comparable <Result>, Serializable {
 
     public void addMountainPoints(int mountainPoints) {
         this.mountainPoints += mountainPoints;
-    }
-
-    public LocalTime getCheckpointTimeAtIndex(int index){
-        return checkpointTimes[index];
     }
 
     public void addSprintPoints(int sprintPoints) {
