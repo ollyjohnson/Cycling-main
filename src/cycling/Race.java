@@ -44,12 +44,12 @@ public class Race implements Serializable {
             totalLength += stage.getLength();
             stageNames[index++] = stage.getStageName();
         }
-
+    
         String details = """
         Race ID = %d
         Race name = %s
         Race description = %s
-        Stages in race = %d
+        Stages in race = %s
         Length of race = %.2f
         """.formatted(id, name, description, String.join("\n", stageNames), totalLength);
         return details;

@@ -1,11 +1,9 @@
 package cycling;
 
-import java.io.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
-
-import javax.naming.InvalidNameException;
+import java.util.HashMap;
+import java.io.*;
 
 
 /**
@@ -47,17 +45,17 @@ public class CyclingPortalImpl implements CyclingPortal {
 	// Validates a race name ensuring it is not null, empty, or already used.
 	private void validateRaceName(String name) throws IllegalNameException, InvalidNameException {
         if (name == null || name.trim().isEmpty()) {
-            throw new InvalidNameException("Team name cannot be null or empty.");
+            throw new InvalidNameException("Race name cannot be null or empty.");
         }
 		if (name.length() > 30){
-			throw new InvalidNameException("Team name cannot be greater than 30 characters");
+			throw new InvalidNameException("Race name cannot be greater than 30 characters");
 		}
 		if (name.matches(".*\\s.*")) {
-			throw new InvalidNameException("Team name cannot contain whitespace.");
+			throw new InvalidNameException("Race name cannot contain whitespace.");
 		}
 		for (Race race : races.values()) {
 			if (race.getRaceName().equals(name)){
-				throw new IllegalNameException("Team name already exists.");
+				throw new IllegalNameException("Race name already exists.");
 			}
 		}
     }
@@ -323,13 +321,13 @@ public class CyclingPortalImpl implements CyclingPortal {
 
 	@Override
 	public int[] getTeams() {
-		int[] teamIds = new int[teams.size()];
-		for (int i = 0; i < teams.size(); i++) {
-			teamIds[i] = teams.get(i).getTeamId();
-		}
-		return teamIds;
-	}
-
+    int[] teamIds = new int[teams.size()];
+    int index = 0;
+    for (Team team : teams.values()) {
+        teamIds[index++] = team.getTeamId();
+    }
+    return teamIds;
+}
 	@Override
 	public int[] getTeamRiders(int teamId) throws IDNotRecognisedException {
 		validateId(getTeams(), teamId);

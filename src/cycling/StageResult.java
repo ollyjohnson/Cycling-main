@@ -2,30 +2,29 @@ package cycling;
 
 import java.time.LocalTime;
 import java.io.Serializable;
-import java.time.Duration;
 
 public class StageResult implements Comparable <StageResult>, Serializable {
     private LocalTime [] checkpointTimes;
-    private LocalTime elapsedTime;
-    private LocalTime adjustedElapsedTime;
+    private LocalTime elapsedTime = LocalTime.MIN;
+    private LocalTime adjustedElapsedTime = LocalTime.MIN;;
     private int riderId;
-    private int rank;
-    private int points;
-    private int mountainPoints;
-    private int sprintPoints;
+    private int rank = 0;
+    private int points = 0;
+    private int mountainPoints = 0;
+    private int sprintPoints = 0;
 
     public StageResult(int riderId, LocalTime[] checkpointTimes){
         this.riderId = riderId;
-        this.rank = 0;
-        this.points = 0;
-        this.mountainPoints = 0;
-        this.sprintPoints = 0;
         this.checkpointTimes = checkpointTimes;
     }
 
-    public LocalTime calculateElapsedTime(){
-        Duration duration = Duration.between(checkpointTimes[0], checkpointTimes[checkpointTimes.length - 1]);
-        elapsedTime = LocalTime.ofNanoOfDay(duration.toNanos());
+    public LocalTime calculateElapsedTime() {
+        LocalTime start = checkpointTimes[0];
+        LocalTime end = checkpointTimes[checkpointTimes.length - 1];
+        long startNanos = start.toNanoOfDay();
+        long endNanos = end.toNanoOfDay();
+        long elapsedNanos = endNanos - startNanos;
+        elapsedTime = LocalTime.ofNanoOfDay(elapsedNanos);
         return elapsedTime;
     }
 
