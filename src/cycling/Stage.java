@@ -17,7 +17,7 @@ public class Stage {
     private LocalDateTime startTime;
     private StageType stageType;
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
-    private boolean waitingForResults;
+    private StageState stageState;
     private boolean timesAdjusted;
     private boolean checkpointPointsUpdated;
     private HashMap<Integer, StageResult> riderResults = new HashMap<>();
@@ -43,6 +43,7 @@ public class Stage {
         this.stageType = stageType;
         this.timesAdjusted = true; //this is set to false when the adjusted rider elapsed times need to be updated
         this.checkpointPointsUpdated = true; //this is set to false when the adjusted rider elapsed times need to be updated
+        this.stageState = StageState.CONSTRUCTING;
     }
 
     /**
@@ -106,7 +107,7 @@ public class Stage {
      * Sets the stage's status to waiting for results.
      */
     public void setWaitingForResults() {
-        this.waitingForResults = true;
+        this.stageState = StageState.WAITING_FOR_RESULTS;
     }
 
     /**
@@ -114,8 +115,8 @@ public class Stage {
      *
      * @return True if the stage is waiting for results, false otherwise.
      */
-    public boolean isStageWaitingForResults(){
-        return waitingForResults;
+    public StageState getStageState(){
+        return stageState;
     }
 
     /**

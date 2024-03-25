@@ -320,7 +320,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new InvalidStageTypeException("Climbs cannot be added to a time-trial stage.");
 		}
 
-		if (stage.isStageWaitingForResults()) {
+		if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
 			throw new InvalidStageStateException("Cannot modify stage in this state.");
 		}
 	
@@ -360,7 +360,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new InvalidStageTypeException("Sprints cannot be added to a time-trial stage.");
 		}
 
-		if (stage.isStageWaitingForResults()) {
+		if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
 			throw new InvalidStageStateException("Cannot modify stage in this state.");
 		}
 		CheckpointType type = CheckpointType.SPRINT;
@@ -388,7 +388,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		for (Race race : races.values()) {
 			for (Stage stage : race.getStages()) {
 				if (stage.getCheckpoints().containsKey(checkpointId)) {
-					if (stage.isStageWaitingForResults()) {
+					if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
 						throw new InvalidStageStateException("Cannot modify stage in this state.");
 					}
 					stage.removeCheckpointFromStage(checkpointId);
@@ -416,11 +416,11 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
 		Stage stage = findStageById(stageId);
-		if(stage.isStageWaitingForResults()){
-			throw new InvalidStageStateException("Cannot modify stage in this state");
+		if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
+			throw new InvalidStageStateException("Cannot modify stage in this state because it is already waiting for results.");
 		}
 		stage.setWaitingForResults();
-		assert stage.isStageWaitingForResults() : "Stage state was not changed to waiting for results";
+		assert stage.getStageState() == StageState.WAITING_FOR_RESULTS : "Stage state was not changed to waiting for results";
 
 	}
 
@@ -607,8 +607,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 		stage.addStageResult(riderId, stageResult);
 		raceResult.addStageResult(stageId, stageResult);
 		race.addOverallResult(riderId, raceResult);
-		if(!rider.ridersInRace(race.getRaceId())){
-			rider.addRaceId(race.getRaceId());
+		if(!rider.ridersInRace(race)){
+			rider.addRaceId(race);
 		}
 	 }
 
