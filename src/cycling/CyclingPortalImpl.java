@@ -2,6 +2,7 @@ package cycling;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.io.*;
 
@@ -25,7 +26,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	private HashMap<Integer, Race> races = new HashMap<>();
 
 	/**
-	 * This implementation checks if the provided team name is valid.
+	 * This helper method checks if the provided team name is valid.
 	 * It ensures that the name is not null, not empty, does not exceed 30 characters,
 	 * does not contain any whitespace, and is not already in use by another team.
 	 *
@@ -51,7 +52,7 @@ public class CyclingPortalImpl implements CyclingPortal {
     }
 
 	/**
-	 * This implementation verifies the validity of a race name.
+	 * This helper method verifies the validity of a race name.
 	 * It checks for the name being non-null, non-empty, within a 30-character limit,
 	 * free of whitespace, and ensures it is not already assigned to an existing race.
 	 *
@@ -77,7 +78,7 @@ public class CyclingPortalImpl implements CyclingPortal {
     }
 
 	/**
-	 * This implementation validates the existence of an ID within a provided array of IDs.
+	 * This helper method validates the existence of an ID within a provided array of IDs.
 	 * It throws an exception if the ID is not found, indicating it is not recognized within the system.
 	 *
 	 * @param idArray An array of IDs to be searched.
@@ -227,7 +228,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	/**
-	 * This implementation locates a stage by its ID across all races.
+	 * This helper method locates a stage by its ID across all races.
 	 *
 	 * @param stageId The ID of the stage to find.
 	 * @return The stage object if found.
@@ -264,12 +265,13 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	/**
-	 * This implementation determines the length of a specific stage.
+	 * This implementation retrieves the length of a specific stage.
 	 *
 	 * @param stageId The ID of the stage being queried.
 	 * @return The length of the stage in kilometers.
 	 * @throws IDNotRecognisedException If the stage ID does not match any stage in the system.
 	 */
+	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
 		Stage stage = findStageById(stageId);
     	return stage.getLength();
@@ -418,6 +420,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			throw new InvalidStageStateException("Cannot modify stage in this state");
 		}
 		stage.setWaitingForResults();
+		assert stage.isStageWaitingForResults() : "Stage state was not changed to waiting for results";
 
 	}
 
@@ -430,6 +433,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException {
+		//find a validate the stage id
 		Stage stage = findStageById(stageId);	
 		return stage.getOrderedCheckpointIds();
 	}
@@ -447,6 +451,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int createTeam(String name, String description) throws IllegalNameException, InvalidNameException {
 		validateTeamName(name);
 		int newTeamId = teamIdCounter++;
+		assert !teams.containsKey(newTeamId) : "Team with new team id " + newTeamId + " already exists";
 		Team newTeam = new Team(newTeamId, name, description);
 		teams.put(newTeamId, newTeam);
 		return newTeamId;
@@ -525,7 +530,6 @@ public class CyclingPortalImpl implements CyclingPortal {
 		validateId(getTeams(), teamId);
 		//Get the team from the map using the id
 		Team riderTeam = teams.get(teamId);
-
 		// Create a new rider and add to the team
 		int newRiderId = riderIdCounter++;
 		Rider newRider = new Rider(newRiderId, name, yearOfBirth, riderTeam);
@@ -536,7 +540,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	}
 
 	/**
-	 * This implementation searches for a rider by their ID across all teams.
+	 * This helper method searches for a rider by their ID across all teams.
 	 *
 	 * @param riderId The ID of the rider to find.
 	 * @return The rider object if they are found within any team.
@@ -603,6 +607,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 		stage.addStageResult(riderId, stageResult);
 		raceResult.addStageResult(stageId, stageResult);
 		race.addOverallResult(riderId, raceResult);
+		if(!rider.ridersInRace(race.getRaceId())){
+			rider.addRaceId(race.getRaceId());
+		}
 	 }
 
 	/**

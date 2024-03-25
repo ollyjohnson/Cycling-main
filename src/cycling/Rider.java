@@ -1,6 +1,7 @@
 package cycling;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Represents a rider in a cycling team, including their identification, name,
@@ -11,6 +12,7 @@ public class Rider implements Serializable {
     private String name;
     private Team team;
     private int yearOfBirth;
+    private ArrayList<Race> races = new ArrayList<>();
 
     /**
      * Constructs a new Rider instance with the specified details.
@@ -44,6 +46,26 @@ public class Rider implements Serializable {
     public Team getTeam(){
         return team;
     }
+
+    /**
+     * Gets the team to which the rider belongs.
+     *
+     * @return The team of the rider.
+     */
+    public void addRaceId(Race race){
+        races.add(race);
+    }
+
+    public void removeRaceId(Race race){
+        races.remove(race);
+    }
+
+    public boolean ridersInRace(Race race){
+        return races.contains(race);
+    }
+
+
+
 }
 
 

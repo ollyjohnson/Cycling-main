@@ -139,20 +139,20 @@ public class CyclingPortalTest {
 
             // Register rider results for a stage
             LocalTime[] checkpointTimes5 = {
-                LocalTime.of(3, 15),
-                LocalTime.of(4, 2),
-                LocalTime.of(4, 27),
-                LocalTime.of(5, 9),
-                LocalTime.of(5, 15,05,24)
+                LocalTime.of(3, 00),
+                LocalTime.of(3, 47),
+                LocalTime.of(4, 9),
+                LocalTime.of(4, 53),
+                LocalTime.of(5, 00,05,24)
             };
 
             // Register rider results for a stage
             LocalTime[] checkpointTimes6 = {
-                LocalTime.of(3, 30),
-                LocalTime.of(4, 11),
-                LocalTime.of(4, 49),
-                LocalTime.of(5, 24),
-                LocalTime.of(5, 33,06,18)
+                LocalTime.of(3, 00),
+                LocalTime.of(3, 41),
+                LocalTime.of(4, 8),
+                LocalTime.of(4, 56),
+                LocalTime.of(5, 03,06,18)
             };
 
             portal.registerRiderResultsInStage(stageId2, riderId, checkpointTimes4);

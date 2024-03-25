@@ -364,11 +364,11 @@ public class Stage {
             case C4:
                 return new int[]{1};
             case C3:
-                return new int[]{1, 1};
-            case C2:
                 return new int[]{2, 1};
+            case C2:
+                return new int[]{5, 3 , 2 , 1};
             case C1:
-                return new int[]{5, 3, 2, 1};
+                return new int[]{10, 8, 6, 4, 2, 1};
             case HC:
                 return new int[]{20, 15, 12, 10, 8, 6, 4, 2};
             case SPRINT:

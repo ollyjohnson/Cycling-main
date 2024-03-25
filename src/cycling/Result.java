@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * Represents the result of a rider in a race, encapsulating stage times, total time, and points.
+ * Represents the result of a rider in a race, storing stage times, total time, and points.
  */
 public class Result implements Comparable <Result>, Serializable {
 
@@ -26,7 +26,6 @@ public class Result implements Comparable <Result>, Serializable {
     public Result(int riderId){
         this.riderId = riderId;
     }
-<<<<<<< HEAD
 
     /**
      * Compares this result with another to order them by total adjusted elapsed time.
@@ -35,8 +34,6 @@ public class Result implements Comparable <Result>, Serializable {
      * @return A negative integer, zero, or a positive integer as this result is less than,
      *         equal to, or greater than the specified result.
      */
-=======
->>>>>>> 478f4e59794280287c7070bad1b06fd93aeb06ac
     @Override
     public int compareTo(Result other) {
         return this.totalAdjustedElapsedTime.compareTo(other.totalAdjustedElapsedTime);
