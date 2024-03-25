@@ -65,8 +65,8 @@ public class CyclingPortalTest {
             int categorisedClimbId4 = portal.addCategorizedClimbToStage(stageId2, 60.00, CheckpointType.HC, 20.00, 10.00);
             System.out.println("Categorised climb id: " + categorisedClimbId4);
 
-            portal.concludeStagePreparation(stageId);
-            System.out.println("stage preparation concluded");
+            portal.concludeStagePreparation(stageId2);
+            System.out.println("stage 2 preparation concluded");
 
             int[] stageCheckpoints2 = portal.getStageCheckpoints(stageId2);
             System.out.println("Stage checkpooints:" + Arrays.toString(stageCheckpoints2));
