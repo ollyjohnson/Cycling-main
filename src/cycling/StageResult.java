@@ -9,7 +9,8 @@ import java.io.Serializable;
 public class StageResult implements Comparable <StageResult>, Serializable {
     private LocalTime [] checkpointTimes;
     private LocalTime elapsedTime = LocalTime.MIN;
-    private LocalTime adjustedElapsedTime = LocalTime.MIN;;
+    private LocalTime adjustedElapsedTime = LocalTime.MIN;
+    private LocalTime [] adjustedCheckpointTimes;
     private int riderId;
     private int rank = 0;
     private int points = 0;
@@ -25,14 +26,20 @@ public class StageResult implements Comparable <StageResult>, Serializable {
     public StageResult(int riderId, LocalTime[] checkpointTimes){
         this.riderId = riderId;
         this.checkpointTimes = checkpointTimes;
+        this.adjustedCheckpointTimes = checkpointTimes;
+        this.elapsedTime = calculateElapsedTime(checkpointTimes);
     }
 
+<<<<<<< HEAD
     /**
      * Calculates the total elapsed time from the start to the end checkpoint.
      *
      * @return The total elapsed time as a LocalTime object.
      */
     public LocalTime calculateElapsedTime() {
+=======
+    public LocalTime calculateElapsedTime(LocalTime[] checkpointTimes) {
+>>>>>>> 478f4e59794280287c7070bad1b06fd93aeb06ac
         LocalTime start = checkpointTimes[0];
         LocalTime end = checkpointTimes[checkpointTimes.length - 1];
         long startNanos = start.toNanoOfDay();
@@ -189,5 +196,14 @@ public class StageResult implements Comparable <StageResult>, Serializable {
      */
     public LocalTime [] getCheckpointTimes(){
         return checkpointTimes;
+    }
+
+    public void setAdjustedCheckpointTime(int checkpointIndex, LocalTime timeDifference){
+        adjustedCheckpointTimes[checkpointIndex] = timeDifference;
+    }
+
+    public LocalTime getAdjustedCheckpointTime(int checkpointIndex){
+        LocalTime adjustedCheckpointTime = adjustedCheckpointTimes[checkpointIndex];
+        return adjustedCheckpointTime;
     }
 }
