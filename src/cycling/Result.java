@@ -87,7 +87,7 @@ public class Result implements Comparable <Result>, Serializable {
         long totalNanoseconds = time1.toNanoOfDay() + time2.toNanoOfDay();
         return LocalTime.ofNanoOfDay(totalNanoseconds);
     }
-    
+
     public LocalTime getTotalAdjustedElapsedTime() {
         for (StageResult result : stageResults.values()) {
             LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
@@ -107,7 +107,7 @@ public class Result implements Comparable <Result>, Serializable {
     public void setRank(int rank){
         this.rank = rank;
     }
-    
+
     public int getRank(){
         return rank;
     }
@@ -115,7 +115,7 @@ public class Result implements Comparable <Result>, Serializable {
     public void addPoints(int points){
         this.points += points;
     }
-    
+
     public int getPoints(){
         return points;
     }

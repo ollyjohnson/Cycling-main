@@ -6,7 +6,7 @@ import java.time.LocalDateTime; // For using LocalDateTime.now()
 import java.time.LocalTime; // For using LocalTime.of()
 import java.util.Arrays;
 
-public class CyclingPortalTest {
+public class CyclingPortalTest extends Rider {
     public static void main(String[] args) {
         try{
             CyclingPortalImpl portal = new CyclingPortalImpl();
