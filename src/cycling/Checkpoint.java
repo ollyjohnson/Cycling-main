@@ -1,6 +1,8 @@
 package cycling;
 
-public class Checkpoint {
+import java.io.Serializable;
+
+public class Checkpoint implements Serializable {
     protected int id;
     protected double location;
     protected int stageId;

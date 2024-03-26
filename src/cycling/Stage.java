@@ -1,5 +1,6 @@
 package cycling;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -8,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class Stage {
+public class Stage implements Serializable {
     private int id;
     private String name;
     private Race race;

@@ -247,6 +247,15 @@ public class CyclingPortalTest {
             int intermediateSprintId2 = portal.addIntermediateSprintToStage(stageId3, 80.00);
             System.out.println("Sprint id: " + intermediateSprintId2);
 
+            int[] stageCheckpoints3 = portal.getStageCheckpoints(stageId3);
+            System.out.println("Stage checkpoints before removal: " + Arrays.toString(stageCheckpoints3));
+
+            portal.removeCheckpoint(intermediateSprintId2);
+            System.out.println("Removed checkpoint " + intermediateSprintId2);
+
+            int[] stageCheckpoints4 = portal.getStageCheckpoints(stageId3);
+            System.out.println("Stage checkpoints after removal: " + Arrays.toString(stageCheckpoints4));
+
             portal.concludeStagePreparation(stageId3);
             System.out.println("stage preparation 3 concluded");
 
@@ -306,20 +315,14 @@ public class CyclingPortalTest {
             portal.registerRiderResultsInStage(stageId3, riderId6, checkpointTimes9);
             System.out.println("Registered rider " + riderId6 + "results in stage " + stageId3);
 
-            portal.removeCheckpoint(intermediateSprintId2);
-            System.out.println("Removed checkpoint " + intermediateSprintId2);
-
-            int[] stageCheckpoints3 = portal.getStageCheckpoints(stageId3);
-            System.out.println("Stage checkpoints after removal: " + Arrays.toString(stageCheckpoints3));
-
             portal.removeStageById(stageId3);
             System.out.println("Removed stage " + stageId3);
 
             int[] raceStageIds3 = portal.getRaceStages(raceId2);
             System.out.println("Race stages after removal: " + Arrays.toString(raceStageIds3));
 
-            LocalTime[] riderResultsInStage3 = portal.getRiderResultsInStage(stageId3, riderId6);
-            System.out.println("Rider results in stage: " + Arrays.toString(riderResultsInStage3));
+            int[] riderResultsInStage3 = portal.getRidersGeneralClassificationRank(raceId2);
+            System.out.println("Riders general classification rank in race: " + Arrays.toString(riderResultsInStage3));
 
             portal.removeRaceById(raceId2);
             System.out.println("Removed race " + raceId2);
@@ -333,11 +336,11 @@ public class CyclingPortalTest {
             int[] teamIds4 = portal.getTeamRiders(teamId);
             System.out.println("Riders in team after removal: " + Arrays.toString(teamIds4));
 
-            LocalTime[] riderResultsInStage4 = portal.getRiderResultsInStage(stageId, riderId2);
-            System.out.println("Rider results in stage: " + Arrays.toString(riderResultsInStage4));
+            int[] riderResultsInRace = portal.getRidersGeneralClassificationRank(raceId);
+            System.out.println("Rider ranks in race after rider 2 was removed: " + Arrays.toString(riderResultsInRace));
 
             portal.deleteRiderResultsInStage(stageId2, riderId3);
-            System.out.println("Rider " + riderId2 + " results deleted in stage " + stageId2);
+            System.out.println("Rider " + riderId3 + " results deleted in stage " + stageId2);
 
             int[] ridersRankInStage3 = portal.getRidersRankInStage(stageId2);
             System.out.println("Riders ranks in stage 2 after delete: " + Arrays.toString(ridersRankInStage3));

@@ -2,7 +2,6 @@ package cycling;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.io.*;
 
@@ -762,12 +761,26 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException {
+		Object obj;
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
-			CyclingPortalImpl loadedPortal = (CyclingPortalImpl) in.readObject();
+			obj = in.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw e;
 		}
+		if (!(obj instanceof CyclingPortalImpl)) {
+			throw new ClassNotFoundException("The file did not contain a CyclingPortalImpl object.");
+		}
+		// safely downcase as we have checked that it is the correct object type
+		CyclingPortalImpl loadedPortal = (CyclingPortalImpl) obj;
+		this.teamIdCounter = loadedPortal.teamIdCounter;
+		this.riderIdCounter = loadedPortal.riderIdCounter;
+		this.raceIdCounter = loadedPortal.raceIdCounter;
+		this.stageIdCounter = loadedPortal.stageIdCounter;
+		this.checkpointIdCounter = loadedPortal.checkpointIdCounter;
+		this.teams = loadedPortal.teams;
+		this.races = loadedPortal.races;
 	}
+	
 
 	/**
 	 * This implementation removes a race and all related data, including stages and results, from the system based on the race name.
