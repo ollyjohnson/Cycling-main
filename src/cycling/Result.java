@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * Represents the result of a rider in a race, encapsulating stage times, total time, and points.
+ * Represents the result of a rider in a race, storing stage times, total time, and points.
  */
 public class Result implements Comparable <Result>, Serializable {
 

@@ -1,5 +1,6 @@
 package cycling;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -8,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class Stage {
+public class Stage implements Serializable {
     private int id;
     private String name;
     private Race race;
@@ -17,7 +18,7 @@ public class Stage {
     private LocalDateTime startTime;
     private StageType stageType;
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
-    private boolean waitingForResults;
+    private StageState stageState;
     private boolean timesAdjusted;
     private boolean checkpointPointsUpdated;
     private HashMap<Integer, StageResult> riderResults = new HashMap<>();
@@ -43,6 +44,7 @@ public class Stage {
         this.stageType = stageType;
         this.timesAdjusted = true; //this is set to false when the adjusted rider elapsed times need to be updated
         this.checkpointPointsUpdated = true; //this is set to false when the adjusted rider elapsed times need to be updated
+        this.stageState = StageState.CONSTRUCTING;
     }
 
     /**
@@ -106,7 +108,7 @@ public class Stage {
      * Sets the stage's status to waiting for results.
      */
     public void setWaitingForResults() {
-        this.waitingForResults = true;
+        this.stageState = StageState.WAITING_FOR_RESULTS;
     }
 
     /**
@@ -114,8 +116,8 @@ public class Stage {
      *
      * @return True if the stage is waiting for results, false otherwise.
      */
-    public boolean isStageWaitingForResults(){
-        return waitingForResults;
+    public StageState getStageState(){
+        return stageState;
     }
 
     /**
@@ -364,11 +366,11 @@ public class Stage {
             case C4:
                 return new int[]{1};
             case C3:
-                return new int[]{1, 1};
-            case C2:
                 return new int[]{2, 1};
+            case C2:
+                return new int[]{5, 3 , 2 , 1};
             case C1:
-                return new int[]{5, 3, 2, 1};
+                return new int[]{10, 8, 6, 4, 2, 1};
             case HC:
                 return new int[]{20, 15, 12, 10, 8, 6, 4, 2};
             case SPRINT:
