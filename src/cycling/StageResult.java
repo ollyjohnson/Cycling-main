@@ -30,16 +30,12 @@ public class StageResult implements Comparable <StageResult>, Serializable {
         this.elapsedTime = calculateElapsedTime(checkpointTimes);
     }
 
-<<<<<<< HEAD
     /**
      * Calculates the total elapsed time from the start to the end checkpoint.
      *
      * @return The total elapsed time as a LocalTime object.
      */
     public LocalTime calculateElapsedTime() {
-=======
-    public LocalTime calculateElapsedTime(LocalTime[] checkpointTimes) {
->>>>>>> 478f4e59794280287c7070bad1b06fd93aeb06ac
         LocalTime start = checkpointTimes[0];
         LocalTime end = checkpointTimes[checkpointTimes.length - 1];
         long startNanos = start.toNanoOfDay();

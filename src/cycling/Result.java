@@ -26,7 +26,6 @@ public class Result implements Comparable <Result>, Serializable {
     public Result(int riderId){
         this.riderId = riderId;
     }
-<<<<<<< HEAD
 
     /**
      * Compares this result with another to order them by total adjusted elapsed time.
@@ -35,8 +34,6 @@ public class Result implements Comparable <Result>, Serializable {
      * @return A negative integer, zero, or a positive integer as this result is less than,
      *         equal to, or greater than the specified result.
      */
-=======
->>>>>>> 478f4e59794280287c7070bad1b06fd93aeb06ac
     @Override
     public int compareTo(Result other) {
         return this.totalAdjustedElapsedTime.compareTo(other.totalAdjustedElapsedTime);
@@ -63,7 +60,7 @@ public class Result implements Comparable <Result>, Serializable {
         long totalNanoseconds = time1.toNanoOfDay() + time2.toNanoOfDay();
         return LocalTime.ofNanoOfDay(totalNanoseconds);
     }
-    
+
     public LocalTime getTotalAdjustedElapsedTime() {
         for (StageResult result : stageResults.values()) {
             LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
@@ -83,7 +80,7 @@ public class Result implements Comparable <Result>, Serializable {
     public void setRank(int rank){
         this.rank = rank;
     }
-    
+
     public int getRank(){
         return rank;
     }
@@ -91,7 +88,7 @@ public class Result implements Comparable <Result>, Serializable {
     public void addPoints(int points){
         this.points += points;
     }
-    
+
     public int getPoints(){
         return points;
     }
