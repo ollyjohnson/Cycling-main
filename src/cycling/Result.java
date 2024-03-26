@@ -40,13 +40,40 @@ public class Result implements Comparable <Result>, Serializable {
     }
 
     /**
-     * Adds a stage result to this result, updating the total adjusted elapsed time.
+     * Adds a stage result to this result.
      *
      * @param stageId The ID of the stage.
      * @param stageResult The result from the stage.
      */
     public void addStageResult(int stageId, StageResult stageResult) {
         stageResults.put(stageId, stageResult);
+    }
+
+    /**
+     * Removes a stage result from this result.
+     *
+     * @param stageId The ID of the stage.
+     */
+    public void removeStageResult(int stageId) {
+        stageResults.remove(stageId);
+    }
+
+    /**
+     * Checks if there is a result stored for a stage.
+     *
+     * @param stageId The ID of the stage.
+     */
+    public boolean hasStageResult(int stageId) {
+        return stageResults.containsKey(stageId);
+    }
+
+    /**
+     * Checks if this result has any stages associated with it.
+     *
+     * @return true if the Result doesnt have any StageResults, false otherwise.
+     */
+    public boolean isEmpty() {
+        return stageResults.isEmpty();
     }
 
     /**
@@ -129,5 +156,9 @@ public class Result implements Comparable <Result>, Serializable {
         for(StageResult result: stageResults.values()){
             addMountainPoints(result.getMountainPoints());
         }
+    }
+
+    public void clearStageResults(){
+        stageResults.clear();
     }
 }

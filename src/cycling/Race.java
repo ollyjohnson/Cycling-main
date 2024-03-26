@@ -2,9 +2,8 @@ package cycling;
 
 import java.io.Serializable;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -100,6 +99,18 @@ public class Race implements Serializable {
      */
     public void removeStage(int stageId){
         stages.remove(stageId);
+        
+        Iterator<Result> iterator = riderResults.values().iterator();
+        while(iterator.hasNext()){
+            Result result = iterator.next();
+            if(result.hasStageResult(stageId)){
+                result.removeStageResult(stageId);
+            }
+            //this will ensure that the HashMap is empty if there are no results
+            if(result.isEmpty()){
+                iterator.remove();
+            }
+        }
     }
 
     /**
@@ -166,6 +177,24 @@ public class Race implements Serializable {
     }
 
     /**
+     * Removes the overall result of a rider in the race.
+     *
+     * @param riderId The ID of the rider whose result is being added or updated.
+     * @return The previous result for the rider if it exists, null otherwise.
+     */
+    public void removeRiderResults(int riderId){
+        for(Stage stage : stages.values()){
+            stage.removeRiderResults(riderId);
+        }
+        Result riderResult = riderResults.get(riderId);
+        if(riderResult != null){
+            riderResult.clearStageResults();
+            riderResults.remove(riderId);
+        }
+    }
+}
+
+    /**
      * Retrieves the IDs of all riders who have participated in the race.
      *
      * @return An array of rider IDs.
@@ -211,6 +240,10 @@ public class Race implements Serializable {
      * @return An array of rider IDs, ordered by performance.
      */
     public int[] getRiderIdsByTotalTime(){
+        //if there are no results, return an empty array
+        if(riderResults.isEmpty()){
+            return new int[0];
+        }
         ArrayList<Result> riderResultsByTime = getSortedListOfResults();
         int[] sortedListOfIds = new int[riderResultsByTime.size()];
         int index = 0;

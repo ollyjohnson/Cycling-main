@@ -3,6 +3,7 @@ package cycling;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.*;
 
 
@@ -158,6 +159,18 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		validateId(getRaceIds(), raceId);
+		Race race = races.get(raceId);
+		//This will remove the race from the riders races list first
+		for(Team team : teams.values()){
+			//loop through the riders in each team
+			Rider [] riders = team.getRiders();
+			for(Rider rider : riders){
+				if (rider.ridersInRace(race)){
+					rider.removeRace(race);
+				}
+			}
+		}
+		//this will remove the race from the portal
 		races.remove(raceId);
 	}
 
@@ -572,6 +585,11 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void removeRider(int riderId) throws IDNotRecognisedException {
 		Rider rider = findRiderById(riderId);
 		Team team = rider.getTeam();
+		ArrayList <Race> races = rider.getRiderRaces();
+		for(Race race:races){
+			race.removeRiderResults(riderId);
+			
+		}
 		team.removeRider(riderId);
 	}
 
@@ -607,7 +625,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		raceResult.addStageResult(stageId, stageResult);
 		race.addOverallResult(riderId, raceResult);
 		if(!rider.ridersInRace(race)){
-			rider.addRaceId(race);
+			rider.addRace(race);
 		}
 	 }
 
@@ -791,17 +809,29 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public void removeRaceByName(String name) throws NameNotRecognisedException {
-		//Boolean to track if a race with the given name has been found
-		boolean raceFound = false;
+		Race namedRace = null;
+		//find if the race with the given name exists
 		for(Race race:races.values()){
 			if(race.getRaceName().equals(name)){
-				races.remove(race.getRaceId());
-				raceFound = true;
+				namedRace = race;
 			}
 		}
-		if (!raceFound) {
+		//if it doesnt exist then namedRace will not be updated from null so an exception will be thrown
+		if (!namedRace.equals(null)) {
 			throw new NameNotRecognisedException("No race found with name: " + name);
 		}
+		//This will remove the race from the riders races list first
+		for(Team team : teams.values()){
+			//loop through the riders in each team
+			Rider [] riders = team.getRiders();
+			for(Rider rider : riders){
+				if (rider.ridersInRace(namedRace)){
+					rider.removeRace(namedRace);
+				}
+			}
+		}
+		//this will remove the race from the portal
+		races.remove(namedRace.getRaceId());
 	}
 
 	/**

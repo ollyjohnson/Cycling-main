@@ -322,7 +322,7 @@ public class CyclingPortalTest {
             System.out.println("Race stages after removal: " + Arrays.toString(raceStageIds3));
 
             int[] riderResultsInStage3 = portal.getRidersGeneralClassificationRank(raceId2);
-            System.out.println("Riders general classification rank in race: " + Arrays.toString(riderResultsInStage3));
+            System.out.println("Riders general classification rank in race (should return an empty array as there are no results): " + Arrays.toString(riderResultsInStage3));
 
             portal.removeRaceById(raceId2);
             System.out.println("Removed race " + raceId2);
