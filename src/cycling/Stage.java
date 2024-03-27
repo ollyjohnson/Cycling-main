@@ -207,6 +207,9 @@ public class Stage implements Serializable {
      * @return An array of LocalTime objects representing the rider's times at checkpoints.
      */
     public LocalTime [] getRiderResults(int riderId){
+        if(!timesAdjusted){
+            adjustRiderElapsedTimes();
+        }
         //get the results for the specific rider
         StageResult results = riderResults.get(riderId);
         LocalTime [] checkpointTimes = results.getCheckpointTimes();
@@ -286,6 +289,8 @@ public class Stage implements Serializable {
      */
     public void removeRiderResults(int riderId){
         riderResults.remove(riderId);
+        timesAdjusted = false;
+        checkpointPointsUpdated = false;
     }
 
     /**
@@ -294,6 +299,12 @@ public class Stage implements Serializable {
      * @return An array of rider IDs in the order of their rank.
      */
     public int [] getRiderRanks(){
+        if(!checkpointPointsUpdated){
+            assignCheckpointPoints();
+        }
+        if(!timesAdjusted){
+            adjustRiderElapsedTimes();
+        }
         int [] ranks = new int [riderResults.size()];
         for(StageResult result : riderResults.values()){
             int riderRank = result.getRank();
@@ -308,6 +319,9 @@ public class Stage implements Serializable {
      * @return An array of LocalTime objects representing the sorted adjusted times.
      */
     public LocalTime [] getRankedAdjustedElapsedTimes(){
+        if(!timesAdjusted){
+            adjustRiderElapsedTimes();
+        }
         int[] riderRanks = getRiderRanks();
         LocalTime [] rankedAdjustedElapsedTimes = new LocalTime [riderRanks.length];
         for(int i = 0; i < riderRanks.length; i++){
@@ -345,7 +359,9 @@ public class Stage implements Serializable {
         if(!checkpointPointsUpdated){
             assignCheckpointPoints();
         }
-        adjustRiderElapsedTimes();
+        if(!timesAdjusted){
+            adjustRiderElapsedTimes();
+        }
         int[] orderedPoints = new int[riderResults.size()];
         for(StageResult result: riderResults.values()){
             int rank = result.getRank();
@@ -444,6 +460,9 @@ public class Stage implements Serializable {
      * @return A map containing rider IDs and their corresponding stage results.
      */
     public HashMap<Integer, StageResult> getAllRiderResultsInStage(){
+        if(!timesAdjusted){
+            adjustRiderElapsedTimes();
+        }
         return riderResults;
     }
 

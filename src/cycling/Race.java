@@ -192,7 +192,7 @@ public class Race implements Serializable {
             riderResults.remove(riderId);
         }
     }
-}
+
 
     /**
      * Retrieves the IDs of all riders who have participated in the race.

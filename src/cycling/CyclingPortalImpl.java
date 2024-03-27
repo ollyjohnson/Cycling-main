@@ -481,6 +481,10 @@ public class CyclingPortalImpl implements CyclingPortal {
 		if (teams.containsKey(teamId)) {
 			//if it is remove all riders from the team and then remove it from the hash map
 			Team team = teams.get(teamId);
+			Rider [] riders = team.getRiders();
+			for(Rider rider: riders){
+				removeRider(rider.getRiderId());
+			}
 			team.removeAllRiders();
 			teams.remove(teamId);
 		} else {
@@ -817,7 +821,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			}
 		}
 		//if it doesnt exist then namedRace will not be updated from null so an exception will be thrown
-		if (!namedRace.equals(null)) {
+		if (namedRace.equals(null)) {
 			throw new NameNotRecognisedException("No race found with name: " + name);
 		}
 		//This will remove the race from the riders races list first

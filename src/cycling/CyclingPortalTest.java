@@ -6,7 +6,7 @@ import java.time.LocalDateTime; // For using LocalDateTime.now()
 import java.time.LocalTime; // For using LocalTime.of()
 import java.util.Arrays;
 
-public class CyclingPortalTest extends Rider {
+public class CyclingPortalTest {
     public static void main(String[] args) {
         try{
             CyclingPortalImpl portal = new CyclingPortalImpl();
@@ -367,6 +367,9 @@ public class CyclingPortalTest extends Rider {
             int [] raceIds5 = portal.getRaceIds();
             System.out.println("Races in system: " + Arrays.toString(raceIds5));
 
+            int[] teamsInPortal2 = portal.getTeams();
+            System.out.println("Teams in System: " + Arrays.toString(teamsInPortal2));
+
             // Define a filename to save the portal state
             String filename = "cycling_portal_data.ser";
 
@@ -397,6 +400,8 @@ public class CyclingPortalTest extends Rider {
                 // Verify that the data has been restored
                 int[] racesAfterLoad = portal.getRaceIds();
                 System.out.println("Races in system after load: " + Arrays.toString(racesAfterLoad)); // Should show the races before erase
+                int[] teamsInPortal3 = portal.getTeams();
+            System.out.println("Teams in System after load: " + Arrays.toString(teamsInPortal3));
             } catch (IOException | ClassNotFoundException ex) {
                 System.err.println("Failed to load cycling portal data: " + ex.getMessage());
             }
