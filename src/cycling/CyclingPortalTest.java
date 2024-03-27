@@ -11,6 +11,8 @@ public class CyclingPortalTest {
         try{
             CyclingPortalImpl portal = new CyclingPortalImpl();
 
+            int rand = 15;
+
             // Example of creating a race
             int raceId = portal.createRace("TourdeTest", "A test race");
             System.out.println("Created race with ID: " + raceId);
@@ -196,6 +198,9 @@ public class CyclingPortalTest {
 
             portal.registerRiderResultsInStage(stageId, riderId, checkpointTimes);
             System.out.println("Registered rider " + riderId + "results in stage " + stageId);
+
+            portal.registerRiderResultsInStage(stageId, riderId, checkpointTimes2);
+            System.out.println("Registered rider " + riderId + "results in stage " + stageId);
             
             portal.registerRiderResultsInStage(stageId, riderId2, checkpointTimes2);
             System.out.println("Registered rider " + riderId2 + "results in stage " + stageId);
@@ -248,7 +253,7 @@ public class CyclingPortalTest {
                 LocalTime.of(4, 56),
                 LocalTime.of(5, 03,06,18)
             };
-
+            
             portal.registerRiderResultsInStage(stageId2, riderId, checkpointTimes4);
             System.out.println("Registered rider " + riderId + "results in stage " + stageId2);
             
