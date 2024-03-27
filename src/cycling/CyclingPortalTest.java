@@ -150,7 +150,7 @@ public class CyclingPortalTest {
             LocalTime[] checkpointTimes13 = {
                 LocalTime.of(2, 30),
                 LocalTime.of(3, 32),
-                LocalTime.of(4, 46),
+                LocalTime.of(4, 43),
                 LocalTime.of(5, 30,00,15)
             };
 
