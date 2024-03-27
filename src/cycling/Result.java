@@ -29,6 +29,16 @@ public class Result implements Comparable <Result>, Serializable {
     }
 
     /**
+     * Returns a string representation of the Result, including the rider it relates to.
+     *
+     * @return A string containing the results details.
+     */
+    @Override
+    public String toString(){
+        return("Overall result for rider id:" + riderId);
+    }
+
+    /**
      * Compares this result with another to order them by total adjusted elapsed time.
      *
      * @param other The other result to compare to.
@@ -89,6 +99,11 @@ public class Result implements Comparable <Result>, Serializable {
         return LocalTime.ofNanoOfDay(totalNanoseconds);
     }
 
+    /**
+     * Calculates the total adjusted elapsed time for the rider by summing up the adjusted times from all stages.
+     *
+     * @return The total adjusted elapsed time for the rider across all stages.
+     */
     public LocalTime getTotalAdjustedElapsedTime() {
         for (StageResult result : stageResults.values()) {
             LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
@@ -97,31 +112,65 @@ public class Result implements Comparable <Result>, Serializable {
         return totalAdjustedElapsedTime;
     }
 
+    /**
+     * Gets the unique ID of the rider associated with this result.
+     *
+     * @return The rider ID.
+     */
     public int getRiderId(){
         return riderId;
     }
 
-
+     /**
+     * Adds points to the rider's total points.
+     *
+     * @param points The number of points to be added.
+     */
     public void addPoints(int points){
         this.points += points;
     }
 
+    /**
+     * Gets the total points for the rider.
+     *
+     * @return The total points.
+     */
     public int getPoints(){
         return points;
     }
 
+    /**
+     * Gets the total mountain points for the rider.
+     *
+     * @return The total mountain points.
+     */
     public Integer getMountainPoints() {
         return mountainPoints;
     }
 
+    /**
+     * Adds mountain points to the rider's total mountain points.
+     *
+     * @param mountainPoints The number of mountain points to be added.
+     */
     public void addMountainPoints(int mountainPoints) {
         this.mountainPoints += mountainPoints;
     }
 
+    /**
+     * Adds sprint points to the rider's total sprint points.
+     *
+     * @param sprintPoints The number of sprint points to be added.
+     */
     public void addSprintPoints(int sprintPoints) {
         this.sprintPoints += sprintPoints;
     }
 
+    /**
+     * Gets the total sprint points for the rider.
+     *
+     * @return The total sprint points.
+     */
     public Integer getSprintPoints() {
         return sprintPoints;
     }

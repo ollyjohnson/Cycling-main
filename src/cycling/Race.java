@@ -43,7 +43,7 @@ public class Race implements Serializable {
      */
     @Override
     public String toString() {
-        return("Race id = " + id + " name="+name+" description="+description+" stages=" + stages);
+        return("Race id = " + id + " name="+name+" description="+description);
     }
 
     /**

@@ -32,6 +32,12 @@ public class Climb extends Checkpoint {
         this.length = length;
     }
 
+    /**
+     * Returns a string representation of the Climb, including its ID,
+     * location, type, associated stage ID aswell as the average gradient and length
+     *
+     * @return A string containing the climbs details.
+     */
     @Override
     public String toString(){
         return super.toString() + " average gradient=" + averageGradient + " length=" + length;

@@ -9,6 +9,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Represents a stage within a cycling race, including details such as the stage type,
+ * length, start time, and associated checkpoints. It also manages stage results for riders,
+ * including their times and points awarded based on their performance at various checkpoints
+ * within the stage.
+ *
+ * @author Olly Johnson and Laith Al Qudah
+ * @version 1.0
+ */
+
 public class Stage implements Serializable {
     private final int id;
     private String name;
@@ -186,6 +196,7 @@ public class Stage implements Serializable {
     public void addStageResult(int riderId, StageResult results){
         //stores the rider id with their results
         riderResults.put(riderId, results);
+        assert riderResults.containsKey(riderId) : "Results for rider with ID " + riderId + " were not successfully added to the stage.";
         timesAdjusted = false;
         checkpointPointsUpdated = false;
     }

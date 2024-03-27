@@ -6,6 +6,9 @@ import java.util.ArrayList;
 /**
  * Represents a rider in a cycling team, including their identification, name,
  * year of birth, and the team they belong to.
+ * 
+ *@author Olly Johnson and Laith Al Qudah
+ *@version 1.0
  */
 public class Rider implements Serializable {
     private final int id;
@@ -27,6 +30,17 @@ public class Rider implements Serializable {
         this.name = name;
         this.yearOfBirth = yearOfBirth;
         this.team = team;
+    }
+
+    /**
+     * Returns a string representation of the Rider, including the id,
+     * name, year of birth and team they belong to.
+     * 
+     * @return A string containing the results details.
+     */
+    @Override
+    public String toString(){
+        return("Rider id: " + id + " name: " + name + " year of birth: " + yearOfBirth + " team: " + team.getTeamName());
     }
 
     /**

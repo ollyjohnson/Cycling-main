@@ -98,6 +98,30 @@ public class CyclingPortalTest {
             int[] teamIds = portal.getTeams();
             System.out.println("List of team IDs: " + Arrays.toString(teamIds));
 
+            int teamId5 = portal.createTeam("TeamYellow", "5 test team");
+            System.out.println("Created team with ID: " + teamId5);
+
+            int riderId7 = portal.createRider(teamId5, "Ernie", 2004);
+            System.out.println("Created rider with ID: " + riderId7);
+
+            int riderId8 = portal.createRider(teamId5, "Will", 2004);
+            System.out.println("Created rider with ID: " + riderId8);
+
+            int riderId9 = portal.createRider(teamId5, "Simon", 2004);
+            System.out.println("Created rider with ID: " + riderId9);
+
+            int teamId6 = portal.createTeam("TeamPurple", "6 test team");
+            System.out.println("Created team with ID: " + teamId6);
+
+            int riderId10 = portal.createRider(teamId6, "Phil", 2004);
+            System.out.println("Created rider with ID: " + riderId10);
+
+            int riderId11 = portal.createRider(teamId6, "Wolfie", 2004);
+            System.out.println("Created rider with ID: " + riderId11);
+
+            int riderId12 = portal.createRider(teamId6, "Jay", 2004);
+            System.out.println("Created rider with ID: " + riderId12);
+
             // Register rider results for a stage
             LocalTime[] checkpointTimes = {
                 LocalTime.of(2, 30),
@@ -122,6 +146,54 @@ public class CyclingPortalTest {
                 LocalTime.of(5, 30,00,04)
             };
 
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes13 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 32),
+                LocalTime.of(4, 46),
+                LocalTime.of(5, 30,00,15)
+            };
+
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes14 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 33),
+                LocalTime.of(4, 44),
+                LocalTime.of(5, 31,00,15)
+            };
+
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes15 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 34),
+                LocalTime.of(4, 44,01),
+                LocalTime.of(5, 32,00,15)
+            };
+
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes10 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 35),
+                LocalTime.of(4, 44,10),
+                LocalTime.of(5, 33,00,15)
+            };
+
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes11 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 36),
+                LocalTime.of(4, 44,20),
+                LocalTime.of(5, 34,00,15)
+            };
+
+            // Register rider results for a stage
+            LocalTime[] checkpointTimes12 = {
+                LocalTime.of(2, 30),
+                LocalTime.of(3, 37),
+                LocalTime.of(4, 44,30),
+                LocalTime.of(5, 35,00,15)
+            };
+
             portal.registerRiderResultsInStage(stageId, riderId, checkpointTimes);
             System.out.println("Registered rider " + riderId + "results in stage " + stageId);
             
@@ -130,6 +202,24 @@ public class CyclingPortalTest {
 
             portal.registerRiderResultsInStage(stageId, riderId3, checkpointTimes3);
             System.out.println("Registered rider " + riderId3 + "results in stage " + stageId);
+
+            portal.registerRiderResultsInStage(stageId, riderId7, checkpointTimes13);
+            System.out.println("Registered rider " + riderId7 + "results in stage " + stageId);
+            
+            portal.registerRiderResultsInStage(stageId, riderId8, checkpointTimes14);
+            System.out.println("Registered rider " + riderId8 + "results in stage " + stageId);
+
+            portal.registerRiderResultsInStage(stageId, riderId9, checkpointTimes15);
+            System.out.println("Registered rider " + riderId9 + "results in stage " + stageId);
+
+            portal.registerRiderResultsInStage(stageId, riderId10, checkpointTimes10);
+            System.out.println("Registered rider " + riderId10 + "results in stage " + stageId);
+            
+            portal.registerRiderResultsInStage(stageId, riderId11, checkpointTimes11);
+            System.out.println("Registered rider " + riderId11 + "results in stage " + stageId);
+
+            portal.registerRiderResultsInStage(stageId, riderId12, checkpointTimes12);
+            System.out.println("Registered rider " + riderId12 + "results in stage " + stageId);
 
             // Register rider results for a stage
             LocalTime[] checkpointTimes4 = {
