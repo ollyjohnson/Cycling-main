@@ -198,9 +198,6 @@ public class CyclingPortalTest {
 
             portal.registerRiderResultsInStage(stageId, riderId, checkpointTimes);
             System.out.println("Registered rider " + riderId + "results in stage " + stageId);
-
-            portal.registerRiderResultsInStage(stageId, riderId, checkpointTimes2);
-            System.out.println("Registered rider " + riderId + "results in stage " + stageId);
             
             portal.registerRiderResultsInStage(stageId, riderId2, checkpointTimes2);
             System.out.println("Registered rider " + riderId2 + "results in stage " + stageId);
@@ -381,7 +378,6 @@ public class CyclingPortalTest {
             LocalTime[] checkpointTimes7 = {
                 LocalTime.of(2, 30),
                 LocalTime.of(3, 30),
-                LocalTime.of(4, 30),
                 LocalTime.of(5, 30)
             };
 
@@ -389,7 +385,6 @@ public class CyclingPortalTest {
             LocalTime[] checkpointTimes8 = {
                 LocalTime.of(2, 30),
                 LocalTime.of(3, 15),
-                LocalTime.of(4, 45),
                 LocalTime.of(5, 45)
             };
 
@@ -397,7 +392,6 @@ public class CyclingPortalTest {
             LocalTime[] checkpointTimes9 = {
                 LocalTime.of(2, 30),
                 LocalTime.of(3, 31),
-                LocalTime.of(4, 20),
                 LocalTime.of(5, 30,00,04)
             };
 

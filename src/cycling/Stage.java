@@ -425,7 +425,7 @@ public class Stage implements Serializable {
         checkpointIndex++;
     }
     checkpointPointsUpdated = true;
-}
+    }
 
     /**
      * Returns an array of mountain points for riders, ordered by their finishing rank in the stage.
@@ -454,13 +454,14 @@ public class Stage implements Serializable {
         return stageType;
     }
 
-
-
-
-
-
-
-
-
+    /**
+     * Checks if a rider has a result in this stage.
+     * 
+     * @param riderId the id of the rider
+     * @return True if the rider has a result, fals otherwise.
+     */
+    public boolean riderHasResult(int riderId){
+        return riderResults.containsKey(riderId);
+    }
 }
 

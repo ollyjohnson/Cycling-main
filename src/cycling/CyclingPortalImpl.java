@@ -3,9 +3,6 @@ package cycling;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
-
-import javax.naming.InvalidNameException;
-
 import java.util.ArrayList;
 import java.io.*;
 
@@ -631,9 +628,15 @@ public class CyclingPortalImpl implements CyclingPortal {
 		//validate the id and find the rider
 		Rider rider = findRiderById(riderId);
 		Result raceResult;
-		if(stage.hasStageResult(riderId)) {
+		if(stage.riderHasResult(riderId)) {
         throw new DuplicatedResultException("Rider " + riderId + " already has a result for stage " + stageId);
     	}
+		if(checkpoints.length != stage.getCheckpoints().size()+2){
+			throw new InvalidCheckpointTimesException("Checkpoints are length: " + checkpoints.length + " but should be length: " + (stage.getCheckpoints().size()+2));
+		}
+		if(stage.getStageState() != StageState.WAITING_FOR_RESULTS){
+			throw new InvalidStageStateException("Stage is not waiting for results");
+		}
 		if(race.riderHasResult(riderId)){
 			raceResult = race.getOverallResult(riderId);
 		}
