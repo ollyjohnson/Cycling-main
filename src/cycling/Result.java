@@ -6,6 +6,9 @@ import java.util.HashMap;
 
 /**
  * Represents the result of a rider in a race, storing stage times, total time, and points.
+ * 
+ * @author Olly Johnson and Laith Al Qudah
+ * @version 1.0
  */
 public class Result implements Comparable <Result>, Serializable {
 
@@ -158,6 +161,9 @@ public class Result implements Comparable <Result>, Serializable {
         }
     }
 
+    /**
+     * Clears the stageResults hash maps containing all the results for individual stages.
+     */
     public void clearStageResults(){
         stageResults.clear();
     }

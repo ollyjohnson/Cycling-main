@@ -10,7 +10,7 @@ import java.io.*;
 /**
  * Implementor of the CyclingPortal interface.
  *
- * @author Olly Johnson Laith Al-Qudah
+ * @author Olly Johnson and Laith Al-Qudah
  * @version 1.0
  *
  */

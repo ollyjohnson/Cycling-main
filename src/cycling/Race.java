@@ -8,6 +8,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Represents a race in a cycling event, containing various stages and results of participants.
+ * 
+ * @author Olly Johnson and Laith Al Qudah
+ * @version 1.0
+ */
 public class Race implements Serializable {
     private int id;
     private String name;
