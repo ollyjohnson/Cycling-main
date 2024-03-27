@@ -105,10 +105,6 @@ public class Result implements Comparable <Result>, Serializable {
      * @return The total adjusted elapsed time for the rider across all stages.
      */
     public LocalTime getTotalAdjustedElapsedTime() {
-        for (StageResult result : stageResults.values()) {
-            LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
-            totalAdjustedElapsedTime = addLocalTimes(totalAdjustedElapsedTime, adjustedElapsedTime);
-        }
         return totalAdjustedElapsedTime;
     }
 
@@ -136,6 +132,7 @@ public class Result implements Comparable <Result>, Serializable {
      * @return The total points.
      */
     public int getPoints(){
+        calculateTotalPoints();
         return points;
     }
 
@@ -145,6 +142,7 @@ public class Result implements Comparable <Result>, Serializable {
      * @return The total mountain points.
      */
     public Integer getMountainPoints() {
+        calculateMountainPoints();
         return mountainPoints;
     }
 
@@ -172,6 +170,7 @@ public class Result implements Comparable <Result>, Serializable {
      * @return The total sprint points.
      */
     public Integer getSprintPoints() {
+        calculateTotalPoints();
         return sprintPoints;
     }
 
@@ -197,10 +196,27 @@ public class Result implements Comparable <Result>, Serializable {
         }
     }
 
+    public void calculateAdjustedElapsedTime(){
+        this.totalAdjustedElapsedTime = LocalTime.MIN;
+        for (StageResult result : stageResults.values()) {
+            LocalTime adjustedElapsedTime = result.getAdjustedElapsedTime();
+            this.totalAdjustedElapsedTime = addLocalTimes(totalAdjustedElapsedTime, adjustedElapsedTime);
+        }
+    }
+
     /**
      * Clears the stageResults hash maps containing all the results for individual stages.
      */
     public void clearStageResults(){
         stageResults.clear();
+    }
+    
+    /**
+     * Clears the stageResults hash maps containing all the results for individual stages.
+     */
+    public void updateResult(){
+        calculateAdjustedElapsedTime();
+        calculateTotalPoints();
+        calculateMountainPoints();
     }
 }

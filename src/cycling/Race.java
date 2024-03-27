@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -203,6 +204,9 @@ public class Race implements Serializable {
      * @return A sorted ArrayList of Result objects.
      */
     public ArrayList<Result> getSortedListOfResults() {
+        for(Result result: riderResults.values()){
+           result.updateResult();
+        }
         ArrayList<Result> riderResultsByTime = new ArrayList<>(riderResults.values());
         Collections.sort(riderResultsByTime);
         return riderResultsByTime;
