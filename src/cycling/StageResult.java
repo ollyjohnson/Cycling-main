@@ -5,6 +5,9 @@ import java.io.Serializable;
 
 /**
  * Represents the result of a rider in a specific stage of a race.
+ * 
+ * @author Olly Johnson and Laith Al Qudah
+ * @version 1.0
  */
 public class StageResult implements Comparable <StageResult>, Serializable {
     private LocalTime [] checkpointTimes;
@@ -26,6 +29,16 @@ public class StageResult implements Comparable <StageResult>, Serializable {
         this.riderId = riderId;
         this.checkpointTimes = checkpointTimes;
         this.elapsedTime = calculateElapsedTime(checkpointTimes);
+    }
+
+    /**
+     * Returns a string representation of the StageResult, including the rider it relates to.
+     *
+     * @return A string containing the stage results details.
+     */
+    @Override
+    public String toString(){
+        return("Stage result for rider id:" + riderId);
     }
 
     /**

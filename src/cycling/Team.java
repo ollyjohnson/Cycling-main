@@ -3,6 +3,14 @@ package cycling;
 import java.io.Serializable;
 import java.util.HashMap;
 
+
+/**
+ * Represents a cycling team, including its unique identifier, name, description, and the
+ * riders.
+ * 
+ * @author Olly Johnson and Laith Al Qudah
+ * @version 1.0
+ */
 public class Team implements Serializable {
     private final int id;
     private String name;
@@ -30,7 +38,7 @@ public class Team implements Serializable {
      */
     @Override
     public String toString(){
-        return("Team id = " + id + "n ame="+name+" description="+description+" riders="+ riders);
+        return("Team id = " + id + "name="+name+" description="+description);
     }
 
     /**
@@ -82,6 +90,8 @@ public class Team implements Serializable {
      */
     public void addRider(int riderId, Rider rider) {
         riders.put(riderId, rider);
+        assert riders.containsKey(riderId) : "Rider with ID " + riderId + " was not successfully added to the team.";
+
     }
 
     /**
@@ -91,6 +101,8 @@ public class Team implements Serializable {
      */
     public void removeRider(int riderId){
         riders.remove(riderId);
+        assert !riders.containsKey(riderId) : "Rider with ID " + riderId + " was not successfully removed from the team.";
+
     }
 
     /**

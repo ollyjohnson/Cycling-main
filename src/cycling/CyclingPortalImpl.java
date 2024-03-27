@@ -285,6 +285,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
     	return stage.getLength();
 	}
@@ -297,6 +298,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
 		Race race = stage.getRace();
 		race.removeStage(stageId);
@@ -320,9 +322,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public int addCategorizedClimbToStage(int stageId, Double location, CheckpointType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
 		Race race = stage.getRace();
-		validateId(getRaceStages(race.getRaceId()), stageId);
 
 		if (!stage.isValidLocation(location)) {
 			throw new InvalidLocationException("Location is out of stage bounds.");
@@ -360,9 +362,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public int addIntermediateSprintToStage(int stageId, double location) throws IDNotRecognisedException,
 			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
 		Race race = stage.getRace();
-		validateId(getRaceStages(race.getRaceId()), stageId);
 
 		if (!stage.isValidLocation(location)) {
 			throw new InvalidLocationException("Location is out of stage bounds.");
@@ -396,9 +398,10 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public void removeCheckpoint(int checkpointId) throws IDNotRecognisedException, InvalidStageStateException {
 		boolean checkpointFound = false;
-	
+		//Loop through all races and all stages in each race
 		for (Race race : races.values()) {
 			for (Stage stage : race.getStages()) {
+				//if the checkpoint is in the race and the stage can be modified, then remove the checkpoint
 				if (stage.getCheckpoints().containsKey(checkpointId)) {
 					if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
 						throw new InvalidStageStateException("Cannot modify stage in this state.");
@@ -427,6 +430,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
 		if (stage.getStageState() == StageState.WAITING_FOR_RESULTS) {
 			throw new InvalidStageStateException("Cannot modify stage in this state because it is already waiting for results.");
@@ -445,7 +449,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public int[] getStageCheckpoints(int stageId) throws IDNotRecognisedException {
-		//find a validate the stage id
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);	
 		return stage.getOrderedCheckpointIds();
 	}
@@ -466,6 +470,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		assert !teams.containsKey(newTeamId) : "Team with new team id " + newTeamId + " already exists";
 		Team newTeam = new Team(newTeamId, name, description);
 		teams.put(newTeamId, newTeam);
+		assert teams.containsKey(newTeamId) : "Team with ID " + newTeamId + " was not successfully added.";
 		return newTeamId;
 	}
 
@@ -487,6 +492,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 			}
 			team.removeAllRiders();
 			teams.remove(teamId);
+			assert !teams.containsKey(teamId) : "Team with ID " + teamId + " was not successfully removed.";
 		} else {
 			//If not then throw the exception
 			throw new IDNotRecognisedException("No team found with ID: " + teamId);
@@ -587,6 +593,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 */
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
+		//validate the id and find the rider
 		Rider rider = findRiderById(riderId);
 		Team team = rider.getTeam();
 		ArrayList <Race> races = rider.getRiderRaces();
@@ -614,8 +621,10 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointTimesException,
 			InvalidStageStateException {
+		//validate the id and find the stage
 		Stage stage = findStageById(stageId);
 		Race race = stage.getRace();
+		//validate the id and find the rider
 		Rider rider = findRiderById(riderId);
 		Result raceResult;
 		if(race.riderHasResult(riderId)){
@@ -625,9 +634,13 @@ public class CyclingPortalImpl implements CyclingPortal {
 			raceResult = new Result(riderId);
 		}
 		StageResult stageResult = new StageResult(riderId, checkpoints);
+		//add the stage result to the list in the stage
 		stage.addStageResult(riderId, stageResult);
+		//add the stage result to the overall result list
 		raceResult.addStageResult(stageId, stageResult);
+		//add the overall result to the list in races
 		race.addOverallResult(riderId, raceResult);
+		//check if the rider is already competing in this race, if not then add to ther riders list of races
 		if(!rider.ridersInRace(race)){
 			rider.addRace(race);
 		}
@@ -746,6 +759,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 		// Reset all collections
 		teams.clear();
 		races.clear();
+		assert teams.isEmpty() : "There should be no teams in the system";
+		assert races.isEmpty() : "There should be no races in the system";
 
 		// Reset all ID counters to their initial values.
 		teamIdCounter = 1;
