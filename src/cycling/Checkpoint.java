@@ -43,15 +43,6 @@ public class Checkpoint implements Serializable {
     }
 
     /**
-     * Gets the stage ID associated with this checkpoint.
-     *
-     * @return The ID of the stage.
-     */
-    public int getStageId(){
-        return stageId;
-    }
-
-    /**
      * Gets the location of the checkpoint.
      *
      * @return The distance in kilometers from the start of the stage to the checkpoint.

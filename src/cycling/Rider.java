@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * year of birth, and the team they belong to.
  */
 public class Rider implements Serializable {
-    private int id;
+    private final int id;
     private String name;
     private Team team;
     private int yearOfBirth;
@@ -50,7 +50,7 @@ public class Rider implements Serializable {
     /**
      * Adds a race that the rider will be racing in to the list of all the races the rider will  be competing in.
      *
-     * @param Race The race the rider will be racing.
+     * @param race The race the rider will be racing.
      */
     public void addRace(Race race){
         races.add(race);
@@ -59,7 +59,7 @@ public class Rider implements Serializable {
     /**
      * Removes a race that the rider will no longer be racing in from the list of all the races the rider will  be competing in.
      *
-     * @param Race The race the rider will no longer be racing.
+     * @param race The race the rider will no longer be racing.
      */
     public void removeRace(Race race){
         races.remove(race);
@@ -68,7 +68,7 @@ public class Rider implements Serializable {
     /**
      * Returns true if the rider is due to compete in the race, false otherwise.
      *
-     * @param Race The race in question.
+     * @param race The race in question.
      */
     public boolean ridersInRace(Race race){
         return races.contains(race);

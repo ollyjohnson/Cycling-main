@@ -15,7 +15,7 @@ import java.util.HashMap;
  * @version 1.0
  */
 public class Race implements Serializable {
-    private int id;
+    private final int id;
     private String name;
     private String description;
     private HashMap<Integer, Stage> stages;
@@ -176,17 +176,15 @@ public class Race implements Serializable {
      *
      * @param riderId The ID of the rider whose result is being added or updated.
      * @param raceResult The result object containing the rider's performance data.
-     * @return The previous result for the rider if it exists, null otherwise.
      */
-    public Result addOverallResult(int riderId , Result raceResult){
-        return riderResults.put(riderId, raceResult);
+    public void addOverallResult(int riderId , Result raceResult){
+        riderResults.put(riderId, raceResult);
     }
 
     /**
      * Removes the overall result of a rider in the race.
      *
      * @param riderId The ID of the rider whose result is being added or updated.
-     * @return The previous result for the rider if it exists, null otherwise.
      */
     public void removeRiderResults(int riderId){
         for(Stage stage : stages.values()){
@@ -197,21 +195,6 @@ public class Race implements Serializable {
             riderResult.clearStageResults();
             riderResults.remove(riderId);
         }
-    }
-
-
-    /**
-     * Retrieves the IDs of all riders who have participated in the race.
-     *
-     * @return An array of rider IDs.
-     */
-    public int[] getRiders(){
-        int[] ridersInRace = new int[riderResults.size()];
-        int index = 0;
-        for (Integer key : riderResults.keySet()) {
-            ridersInRace[index++] = key;
-        }
-        return ridersInRace;
     }
 
     /**
@@ -318,7 +301,7 @@ public class Race implements Serializable {
      *
      * @return An array of rider IDs, sorted by their mountain points.
      */
-    public int[] getRiderIdsByMountianPoints() {
+    public int[] getRiderIdsByMountainPoints() {
         ArrayList<Result> sortedResultsByMountainPoints = new ArrayList<>(riderResults.values());
         Collections.sort(sortedResultsByMountainPoints, new Comparator<Result>() {
             @Override

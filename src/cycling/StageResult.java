@@ -10,8 +10,7 @@ public class StageResult implements Comparable <StageResult>, Serializable {
     private LocalTime [] checkpointTimes;
     private LocalTime elapsedTime = LocalTime.MIN;
     private LocalTime adjustedElapsedTime = LocalTime.MIN;
-    private LocalTime [] adjustedCheckpointTimes;
-    private int riderId;
+    private final int riderId;
     private int rank = 0;
     private int points = 0;
     private int mountainPoints = 0;
@@ -26,7 +25,6 @@ public class StageResult implements Comparable <StageResult>, Serializable {
     public StageResult(int riderId, LocalTime[] checkpointTimes){
         this.riderId = riderId;
         this.checkpointTimes = checkpointTimes;
-        this.adjustedCheckpointTimes = checkpointTimes;
         this.elapsedTime = calculateElapsedTime(checkpointTimes);
     }
 
@@ -93,15 +91,6 @@ public class StageResult implements Comparable <StageResult>, Serializable {
      */
     public int getRiderId(){
         return riderId;
-    }
-
-    /**
-     * Retrieves the checkpoint times for the stage.
-     *
-     * @return An array of LocalTime representing the times at each checkpoint.
-     */
-    public LocalTime[] getStageResult(){
-        return checkpointTimes;
     }
 
     /**
@@ -195,12 +184,4 @@ public class StageResult implements Comparable <StageResult>, Serializable {
         return checkpointTimes;
     }
 
-    public void setAdjustedCheckpointTime(int checkpointIndex, LocalTime timeDifference){
-        adjustedCheckpointTimes[checkpointIndex] = timeDifference;
-    }
-
-    public LocalTime getAdjustedCheckpointTime(int checkpointIndex){
-        LocalTime adjustedCheckpointTime = adjustedCheckpointTimes[checkpointIndex];
-        return adjustedCheckpointTime;
-    }
 }

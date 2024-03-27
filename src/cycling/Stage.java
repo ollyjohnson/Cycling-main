@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 public class Stage implements Serializable {
-    private int id;
+    private final int id;
     private String name;
     private Race race;
     private String description;
@@ -114,7 +114,7 @@ public class Stage implements Serializable {
     /**
      * Checks if the stage is currently waiting for results.
      *
-     * @return True if the stage is waiting for results, false otherwise.
+     * @return the current state of the stage (e.g. waiting_for_results)
      */
     public StageState getStageState(){
         return stageState;
@@ -175,16 +175,6 @@ public class Stage implements Serializable {
      */
     public HashMap<Integer, Checkpoint> getCheckpoints(){
         return checkpoints;
-    }
-
-    /**
-     * Checks if the rider has a result recorded for this stage.
-     *
-     * @param riderId The ID of the rider to check.
-     * @return True if results exist for the rider, false otherwise.
-     */
-    public boolean riderHasResult(int riderId){
-        return(riderResults.containsKey(riderId));
     }
 
     /**
@@ -278,8 +268,7 @@ public class Stage implements Serializable {
     public LocalTime getRiderAdjustedElapsedTime(int riderId){
         //get the results for the specific rider
         StageResult results = riderResults.get(riderId);
-        LocalTime adjustedElapsedTime = results.getAdjustedElapsedTime();
-        return adjustedElapsedTime;
+        return results.getAdjustedElapsedTime();
     }
 
     /**
@@ -454,31 +443,6 @@ public class Stage implements Serializable {
         return stageType;
     }
 
-    /**
-     * Retrieves all results recorded in the stage.
-     *
-     * @return A map containing rider IDs and their corresponding stage results.
-     */
-    public HashMap<Integer, StageResult> getAllRiderResultsInStage(){
-        if(!timesAdjusted){
-            adjustRiderElapsedTimes();
-        }
-        return riderResults;
-    }
-
-    /**
-     * Gets an array of all rider IDs that have participated in the stage.
-     *
-     * @return An array of rider IDs for all riders who have results in this stage.
-     */
-    public int[] getAllRidersInStage(){
-        int[] ridersInStage = new int[riderResults.size()];
-        int index = 0;
-        for (Integer key : riderResults.keySet()) {
-            ridersInStage[index++] = key;
-        }
-        return ridersInStage;
-    }
 
 
 

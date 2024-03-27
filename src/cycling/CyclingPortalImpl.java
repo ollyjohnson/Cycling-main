@@ -196,7 +196,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 * @param description A description of the stage.
 	 * @param length The length of the stage in kilometers.
 	 * @param startTime The start time of the stage.
-	 * @param stageType The type of the stage (e.g., flat, mountain).
+	 * @param type The type of the stage (e.g., flat, mountain).
 	 * @return The unique ID of the newly added stage.
 	 * @throws IDNotRecognisedException If the race ID does not correspond to any existing race.
 	 * @throws IllegalNameException If the stage name provided is invalid.
@@ -423,7 +423,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	 *
 	 * @param stageId The ID of the stage to conclude preparation for.
 	 * @throws IDNotRecognisedException If the stage ID does not match any stage in the system.
-	 * @throws InvalidStageStateException
+	 * @throws InvalidStageStateException If the stage is "waiting for results".
 	 */
 	@Override
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
@@ -479,7 +479,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	public void removeTeam(int teamId) throws IDNotRecognisedException {
 		//check if the id is in the teams hash map
 		if (teams.containsKey(teamId)) {
-			//if it is remove all riders from the team and then remove it from the hash map
+			//if it is then remove all riders from the team and then remove it from the hash map
 			Team team = teams.get(teamId);
 			Rider [] riders = team.getRiders();
 			for(Rider rider: riders){
@@ -644,10 +644,9 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		//find the rider and stage and carry out validations
-		Rider rider = findRiderById(riderId);
+		findRiderById(riderId);
 		Stage stage = findStageById(stageId);
-		LocalTime [] results  = stage.getRiderResults(riderId);
-		return results;
+		return stage.getRiderResults(riderId);
 	}
 
 	/**
@@ -661,12 +660,11 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		//find the rider and stage and carry out validations
-		Rider rider = findRiderById(riderId);
+		findRiderById(riderId);
 		Stage stage = findStageById(stageId);
-		//this will updated the elapsed times if needed
+		//this will update the elapsed times if needed
 		stage.adjustRiderElapsedTimes();
-		LocalTime adjustedElapsedTimeInStage = stage.getRiderAdjustedElapsedTime(riderId);
-		return adjustedElapsedTimeInStage;
+		return stage.getRiderAdjustedElapsedTime(riderId);
 	}
 
 	/**
@@ -679,7 +677,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 	@Override
 	public void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		//find the rider and stage and carry out validations
-		Rider rider = findRiderById(riderId);
+		findRiderById(riderId);
 		Stage stage = findStageById(stageId);
 		stage.removeRiderResults(riderId);
 	}
@@ -792,7 +790,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		if (!(obj instanceof CyclingPortalImpl)) {
 			throw new ClassNotFoundException("The file did not contain a CyclingPortalImpl object.");
 		}
-		// safely downcase as we have checked that it is the correct object type
+		// safely downcast as we have checked that it is the correct object type
 		CyclingPortalImpl loadedPortal = (CyclingPortalImpl) obj;
 		this.teamIdCounter = loadedPortal.teamIdCounter;
 		this.riderIdCounter = loadedPortal.riderIdCounter;
@@ -820,8 +818,8 @@ public class CyclingPortalImpl implements CyclingPortal {
 				namedRace = race;
 			}
 		}
-		//if it doesnt exist then namedRace will not be updated from null so an exception will be thrown
-		if (namedRace.equals(null)) {
+		//if it doesn't exist then namedRace will not be updated from null so an exception will be thrown
+		if (namedRace == null) {
 			throw new NameNotRecognisedException("No race found with name: " + name);
 		}
 		//This will remove the race from the riders races list first
@@ -927,7 +925,7 @@ public class CyclingPortalImpl implements CyclingPortal {
 		//validate and retrieve race
 		validateId(getRaceIds(), raceId);
 		Race race = races.get(raceId);
-		return race.getRiderIdsByMountianPoints();
+		return race.getRiderIdsByMountainPoints();
 	}
 
 }

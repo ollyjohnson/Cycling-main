@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Team implements Serializable {
-    private int id;
+    private final int id;
     private String name;
     private HashMap<Integer, Rider> riders;
     private String description;
@@ -20,7 +20,7 @@ public class Team implements Serializable {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.riders = new HashMap<Integer, Rider>();
+        this.riders = new HashMap<>();
     }
 
     /**

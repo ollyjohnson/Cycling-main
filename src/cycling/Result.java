@@ -12,10 +12,8 @@ import java.util.HashMap;
  */
 public class Result implements Comparable <Result>, Serializable {
 
-    private LocalTime [] stageTimes;
     private LocalTime totalAdjustedElapsedTime = LocalTime.MIN;
-    private int riderId;
-    private int rank = 0;
+    private final int riderId;
     private int points = 0;
     private int mountainPoints = 0;
     private int sprintPoints = 0;
@@ -73,7 +71,7 @@ public class Result implements Comparable <Result>, Serializable {
     /**
      * Checks if this result has any stages associated with it.
      *
-     * @return true if the Result doesnt have any StageResults, false otherwise.
+     * @return true if the Result doesn't have any StageResults, false otherwise.
      */
     public boolean isEmpty() {
         return stageResults.isEmpty();
@@ -103,17 +101,6 @@ public class Result implements Comparable <Result>, Serializable {
         return riderId;
     }
 
-    public LocalTime[] getResults(){
-        return stageTimes;
-    }
-
-    public void setRank(int rank){
-        this.rank = rank;
-    }
-
-    public int getRank(){
-        return rank;
-    }
 
     public void addPoints(int points){
         this.points += points;
