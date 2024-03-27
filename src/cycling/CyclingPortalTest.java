@@ -443,16 +443,7 @@ public class CyclingPortalTest {
 
             portal.removeStageById(stageId2);
             System.out.println("Removed stage " + stageId2);
-
-            LocalTime rider1Time = portal.getRiderTAET(raceId, riderId);
-            System.out.println("Rider 1 taet: " + rider1Time);
-
-            LocalTime rider7Time = portal.getRiderTAET(raceId, riderId7);
-            System.out.println("Rider: " + riderId7 + " taet: " + rider7Time);
-
-            LocalTime rider8Time = portal.getRiderTAET(raceId, riderId7);
-            System.out.println("Rider: " + riderId8 + " taet: " + rider8Time);
-
+            
             int[] riderResultsInRace2 = portal.getRidersGeneralClassificationRank(raceId);
             System.out.println("Rider ranks in race after stage 2 was removed: " + Arrays.toString(riderResultsInRace2));
 
