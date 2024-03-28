@@ -79,6 +79,7 @@ public class Result implements Comparable <Result>, Serializable {
      * Checks if there is a result stored for a stage.
      *
      * @param stageId The ID of the stage.
+     * @return true if the stage has a stage result in this overall result, false otherwise
      */
     public boolean hasStageResult(int stageId) {
         return stageResults.containsKey(stageId);
@@ -202,6 +203,9 @@ public class Result implements Comparable <Result>, Serializable {
         }
     }
 
+    /**
+     * Calculates the total adjusted elapsed time for the rider across all stages.
+     */
     public void calculateAdjustedElapsedTime(){
         this.totalAdjustedElapsedTime = LocalTime.MIN;
         for (StageResult result : stageResults.values()) {

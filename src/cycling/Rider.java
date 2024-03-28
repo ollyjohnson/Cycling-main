@@ -85,9 +85,10 @@ public class Rider implements Serializable {
     }
 
     /**
-     * Returns true if the rider is due to compete in the race, false otherwise.
+     * A check to see if a rider is competing in a specified race
      *
      * @param race The race in question.
+     * @return true if the rider is competing in the race, false otherwise.
      */
     public boolean ridersInRace(Race race){
         return races.contains(race);
