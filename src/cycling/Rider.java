@@ -11,10 +11,15 @@ import java.util.ArrayList;
  *@version 1.0
  */
 public class Rider implements Serializable {
+    /** Unique identifier for the rider */
     private final int id;
+    /** Name of the rider */
     private String name;
+    /** The team to which this rider belongs */
     private Team team;
+    /** Year of birth of the rider */
     private int yearOfBirth;
+    /** List of races in which the rider is participating */
     private ArrayList<Race> races = new ArrayList<>();
 
     /**

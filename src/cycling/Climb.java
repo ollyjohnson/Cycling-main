@@ -11,7 +11,9 @@ package cycling;
  * @version 1.0
  */
 public class Climb extends Checkpoint {
+    /** The average gradient of the climb. */
     private double averageGradient;
+    /** The length of the climb in kilometers. */
     private double length;
 
     /**

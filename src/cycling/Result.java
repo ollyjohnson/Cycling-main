@@ -12,11 +12,17 @@ import java.util.HashMap;
  */
 public class Result implements Comparable <Result>, Serializable {
 
+    /** The sum of adjusted elapsed times across all stages */
     private LocalTime totalAdjustedElapsedTime = LocalTime.MIN;
+    /** Unique identifier for the rider */
     private final int riderId;
+    /** Total points accumulated by the rider across all stages */
     private int points = 0;
+    /** Total mountain classification points accumulated by the rider */
     private int mountainPoints = 0;
+    /** Total sprint classification points accumulated by the rider */
     private int sprintPoints = 0;
+    /** Mapping of stage IDs to the rider's results in each stage */
     private HashMap<Integer, StageResult> stageResults = new HashMap<>();
 
     /**

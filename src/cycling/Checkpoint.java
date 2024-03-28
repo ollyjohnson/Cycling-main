@@ -11,9 +11,16 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class Checkpoint implements Serializable {
+    /** The unique identifier for this checkpoint */
     protected int id;
+    
+    /** The location of the checkpoint along the stage route in kilometers */
     protected double location;
+    
+    /** The ID of the stage that this checkpoint is part of */
     protected int stageId;
+    
+    /** The type of checkpoint it is (e.g. Sprint) */
     protected CheckpointType type;
 
     /**

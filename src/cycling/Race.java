@@ -16,10 +16,15 @@ import java.util.HashMap;
  * @version 1.0
  */
 public class Race implements Serializable {
+    /** The unique identifier for this race */
     private final int id;
+    /** The name of the race */
     private String name;
+    /** A description of the race */
     private String description;
+    /** A mapping of stage IDs to their respective Stage objects within this race */
     private HashMap<Integer, Stage> stages;
+    /** A mapping of rider IDs to their respective Result objects within this race */
     private HashMap<Integer, Result> riderResults = new HashMap<>();
 
 

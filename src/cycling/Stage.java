@@ -20,17 +20,29 @@ import java.util.HashMap;
  */
 
 public class Stage implements Serializable {
+    /** Unique identifier for the stage. */
     private final int id;
+    /** Name of the stage. */
     private String name;
+    /** The race this stage is a part of. */
     private Race race;
+    /** A description of the stage. */
     private String description;
+    /** Length of the stage in kilometers. */
     private double length;
+    /** Start time of the stage. */
     private LocalDateTime startTime;
+    /** Type of the stage (e.g. flat, mountain, time trial). */
     private StageType stageType;
+    /** Collection of checkpoints associated with this stage, mapped by their Id. */
     private HashMap<Integer, Checkpoint> checkpoints = new HashMap<>();
+    /** Current state of the stage (e.g. under construction, waiting for results). */
     private StageState stageState;
+    /** Flag indicating if the times have been adjusted for the stage. */
     private boolean timesAdjusted;
+    /** Flag indicating if the points for checkpoints have been updated. */
     private boolean checkpointPointsUpdated;
+    /** Results for riders in this stage, mapped by rider ID. */
     private HashMap<Integer, StageResult> riderResults = new HashMap<>();
 
     /**

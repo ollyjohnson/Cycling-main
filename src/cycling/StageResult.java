@@ -10,13 +10,21 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class StageResult implements Comparable <StageResult>, Serializable {
-    private LocalTime [] checkpointTimes;
+    /** Times at each checkpoint for the rider in the stage. */
+    private LocalTime[] checkpointTimes;
+    /** Elapsed time for the rider to complete the stage. */
     private LocalTime elapsedTime = LocalTime.MIN;
+    /** Adjusted elapsed time accounting for various factors like penalties or bonuses. */
     private LocalTime adjustedElapsedTime = LocalTime.MIN;
+    /** Unique identifier of the rider associated with these results. */
     private final int riderId;
+    /** Rank of the rider in this stage after sorting the results. */
     private int rank = 0;
+    /** Points earned by the rider in this stage. */
     private int points = 0;
+    /** Mountain points earned by the rider in this stage. */
     private int mountainPoints = 0;
+    /** Sprint points earned by the rider in this stage. */
     private int sprintPoints = 0;
 
     /**

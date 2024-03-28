@@ -12,9 +12,13 @@ import java.util.HashMap;
  * @version 1.0
  */
 public class Team implements Serializable {
+    /** Unique identifier for the team. */
     private final int id;
+    /** Name of the team. */
     private String name;
+    /** Collection of riders in this team, mapped by their unique IDs. */
     private HashMap<Integer, Rider> riders;
+    /** Description of the team. */
     private String description;
 
     /**

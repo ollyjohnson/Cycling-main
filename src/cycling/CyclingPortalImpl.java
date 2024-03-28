@@ -15,14 +15,19 @@ import java.io.*;
  *
  */
 public class CyclingPortalImpl implements CyclingPortal {
-	// Counter variables to generate unique IDs for teams, riders, stages and races.
+	/** Counter for generating unique IDs for teams. */
 	private int teamIdCounter = 1;
+	/** Counter for generating unique IDs for riders. */
 	private int riderIdCounter = 1;
+	/** Counter for generating unique IDs for races. */
 	private int raceIdCounter = 1;
+	/** Counter for generating unique IDs for stages. */
 	private int stageIdCounter = 1;
+	/** Counter for generating unique IDs for checkpoints. */
 	private int checkpointIdCounter = 1;
-	// Hash maps to save lists of teams and races.
+	/** Collection of teams within the cycling portal, mapped by their unique IDs. */
 	private HashMap<Integer, Team> teams = new HashMap<>();
+	/** Collection of races within the cycling portal, mapped by their unique IDs. */
 	private HashMap<Integer, Race> races = new HashMap<>();
 
 	/**
